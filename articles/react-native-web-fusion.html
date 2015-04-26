@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="../stylesheets/reset.css"/>
+        <link rel="stylesheet" type="text/css" href="../stylesheets/main.css"/>
+        <link rel="stylesheet" type="text/css" href="../stylesheets/article.css"/>
+        <title>6174's blog</title>
+    </head>
+<body>
+   <div class="page-article">
+        <nav class="site-nav" >
+            <div class="ui breadcrumb" >
+                <a href="http://6174.github.io/blog/">archive</a>
+            </div>
+        </nav>
+        <div class="fixcontainer">
+            <article class="article">
+                <header class="post-header">
+                    <h1 class="post-title"> React-Native 和 React-Web 融合</h1>
+                    <section class="post-meta">
+                        <a class="post-author" target="_blank" href="http://www.weibo.com/2254313183/profile"> &lt;6174/&gt;</a>
+                        创建于
+                        <time class="post-date"> 2015-4-15 </time>
+                    </section>
+                    <hr/>
+                </header>
+                <section class="post-content">
+                    <h2 id="-">关于</h2>
+<p>对于react-native在实际中的应用， facebook官方的说法是react-native是为多平台提供共同的开发方式，而不是说一份代码，多处使用。 然后一份代码能够多处使用还是很有意义的，我所了解到的已经在尝试做这件事情的：</p>
+<ol>
+<li><a href="https://medium.com/@jviereck/modularise-css-the-react-way-1e817b317b04">modularise-css-the-react-way</a></li>
+<li><a href="https://github.com/js-next/react-style">react-style</a></li>
+<li><a href="https://github.com/raphamorim/native-css">native-css</a>  </li>
+</ol>
+<p>现阶段大家都是在摸索中，且react-native 还不够成熟，为此我也想通过一个实际的例子提前探究一下共享代码的可行性。 </p>
+<p>下面是我以SampleApp做的一个简单demo， 先奉献上截图：</p>
+<p><strong>web 版本：</strong></p>
+<p><img src="http://gtms02.alicdn.com/tps/i2/TB1KhiiHFXXXXbBXpXXhV2lQVXX-512-743.png" alt=""></p>
+<p><strong>react-native版本：</strong></p>
+<p><img src="http://gtms04.alicdn.com/tps/i4/TB1Fxx6HFXXXXXdXVXX66HwTVXX-487-801.png" alt=""></p>
+<h2 id="-">初步想法</h2>
+<h3 id="-">组件</h3>
+<p>react-native基本上是View套上Text这样来布局，为了做web和native的兼容，我们得提供继承版本的View ，针对不同的平台返回不同做兼容，我们将提供：</p>
+<ol>
+<li>Share.View -&gt; View  (reac-native = View , web = div)</li>
+<li>Share.P + Share.Span -&gt; Text (Text在react-native中分为块级别和inline级别所以得用两个元素来区分)</li>
+</ol>
+<h3 id="-">样式</h3>
+<p>我们知道react-native的样式是css很小的一个子集，大概支持50种属性，为了做到web和native使用同样地样式，那么我的想法是：</p>
+<ol>
+<li>使用css文件来编写样式，通过编译的方式生产不同平台需要的样式</li>
+<li>对于web，使用auto-prefixel处理，生产web兼容的css代码</li>
+<li>对于react-native，生成对应的styles.js</li>
+<li>css的写法用OOCSS的方式</li>
+</ol>
+<p>这样做的另外一个原因是，因为css是全集，react-native是子集，全集到子集可以通过删减来处理，但是如果想通过子集到全集就会很麻烦（react-style就是通过react-native来生成css）。 且这样做还有很多好处，例如我们可以支持react-native里边不支持的css写法，例如<code>padding: a b c d;</code> 这种写法很容易得到兼容。</p>
+<blockquote>
+<p>其实这里，无论react-native还是react-web都支持<code>style={}</code>这样的写法. 上面例子中的web截图其实是没有引用css的，但inline样式对于web来说并不是优选。</p>
+</blockquote>
+<h2 id="-">实现思路</h2>
+<p>首先大概整理一下我们需要解决的问题：</p>
+<ol>
+<li>如何区分web和native</li>
+<li>js如何对应不同的平台来编译，因为react-native使用的是自己的依赖管理packager</li>
+<li>css如何编译为js</li>
+<li>代码结构应该是怎样的</li>
+</ol>
+<h3 id="-web-native">问题一 ： 如何区分web和native</h3>
+<p>react-native 里边会有window变量吗？我试了一下，是有的，那window变量里边不可能有location，document之类的吧， 借着这种想法，可用如下方法来区分native和web</p>
+<pre><code class="lang-javascript"> <span class="hljs-reserved">var</span> isNative = !<span class="hljs-built_in">window</span>.location;
+</code></pre>
+<h3 id="-">问题二：如何对应不同平台打包</h3>
+<p>对于react-native，是通过packager来打包的，具体的实现和逻辑可以随时查看packager的readme文档。 那我们怎么将适用于native的代码打包成web的代码，首先想到的是<code>browserify</code>, <code>webpack</code>。 都是遵循commonJs规范，个人更喜欢前者， 用它来应该足以满足需求。  </p>
+<h3 id="-css-js">问题三： css如何编译为js</h3>
+<p>前面提到了<code>native-css</code> , 可以用它来帮助我们完成打包。 </p>
+<h3 id="-">问题四：代码结构应该是怎样的</h3>
+<p>web和native的代码都写在同一个地方，如何做区分呢？ 这个问题当然最好就是不做区分，或者就像女生的衣服，期望是越少越好，但永远不可能木有（猥琐了：-】）。  </p>
+<p>我设想中的一个最简模型的目录结构，web和ios有不同的入口，web和ios有单独的目录， 组件共享， 如下：</p>
+<pre><code>├── compo<span class="hljs-class">.js</span>            <span class="hljs-comment">// 我们会使用到得公共组件</span>
+├── styles<span class="hljs-class">.css</span>          <span class="hljs-comment">// compo的样式文件</span>
+├── index<span class="hljs-class">.web</span><span class="hljs-class">.js</span>        <span class="hljs-comment">// web 入口</span>
+├── index<span class="hljs-class">.ios</span><span class="hljs-class">.js</span>        <span class="hljs-comment">// ios 入口</span>
+├── shared<span class="hljs-class">.js</span>           <span class="hljs-comment">// 做兼容的共享变量文件</span>
+├── ios                 <span class="hljs-comment">// ios 目录</span>
+└── web                 <span class="hljs-comment">// web 目录</span>
+    ├── index<span class="hljs-class">.html</span>      <span class="hljs-comment">// web 页面</span>
+    ├── index<span class="hljs-class">.web</span><span class="hljs-class">.js</span>    <span class="hljs-comment">// 打包过后的js</span>
+    └── react<span class="hljs-class">.js</span>        <span class="hljs-comment">// react.js依赖</span>
+</code></pre><p>好像很复杂的样子， 其实相对于原本的SampleApp，只是多了<code>index.web.js</code> , <code>web目录</code>, <code>shared</code>三者。 然后style通过style.css来描述。 </p>
+<h2 id="-">具体实现</h2>
+<p>我们已经整理了具体的实现思路，下面是我就会直接吐出我的实现代码， 重点的地方都会在源码里边有注释 </p>
+<h4 id="-">先看应用代码：</h4>
+<p><strong>ios入口：index.ios.js</strong></p>
+<pre><code class="lang-javascript">    <span class="hljs-comment">/**
+     * Sample React Native App
+     * https://github.com/facebook/react-native
+     */</span>
+<span class="hljs-pi">    'use strict'</span>;
+    <span class="hljs-keyword">var</span> React = <span class="hljs-built_in">require</span>(<span class="hljs-string">'react-native'</span>);
+    <span class="hljs-keyword">var</span> Compo = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./compo'</span>);
+    React.AppRegistry.registerComponent(<span class="hljs-string">'ShareCodeProject'</span>, () =&gt;  Compo);
+</code></pre>
+<p><strong>web入口：index.web.js</strong> </p>
+<pre><code class="lang-javascript">    <span class="hljs-comment">/**
+     * for web
+     */</span>
+    <span class="hljs-keyword">var</span> Compo = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./compo'</span>);
+    React.render(&lt;Compo /&gt;, <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">'App'</span>));
+</code></pre>
+<p><strong>样例组件：compo.js</strong></p>
+<pre><code class="lang-javascript">    <span class="hljs-comment">// 依赖的公共库，通过它获取兼容的组件</span>
+    <span class="hljs-keyword">var</span> Share = <span class="hljs-keyword">require</span>(<span class="hljs-string">'./shared'</span>);
+    <span class="hljs-comment">// styles是style.css build过后生成的style.js</span>
+    <span class="hljs-keyword">var</span> styles = <span class="hljs-keyword">require</span>(<span class="hljs-string">'./styles'</span>);
+    <span class="hljs-keyword">var</span> React = Share.React;
+    <span class="hljs-keyword">var</span> {
+      View,
+      P,
+      Span
+    } = Share;
+
+    <span class="hljs-keyword">var</span> Compo = React.createClass({
+      render: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">return</span> (
+          &lt;View style={styles.container}&gt;
+            &lt;P style={styles.welcome}&gt;
+              Welcome to React Native!
+            &lt;/P&gt;
+            &lt;P style={styles.instructions}&gt;
+              To get started, edit index.ios.js
+            &lt;/P&gt;
+            &lt;P style={styles.instructions}&gt;
+              Press Cmd+R to reload,{<span class="hljs-string">'\n'</span>}
+              Cmd+Control+Z <span class="hljs-keyword">for</span> dev menu
+            &lt;/P&gt;
+          &lt;/View&gt;
+        );
+      }
+    });
+
+    module.exports = Compo;
+</code></pre>
+<p><strong>组件样式: style.css</strong></p>
+<pre><code class="lang-css">    <span class="hljs-comment">/**
+     * 大家可能发现了css的写法还是小驼峰，是的不是横杠，暂时我们还是以这种方式处理
+     * native-css 目测不支持横杠，（自己重写native-css相对来说是比较容易的，完全可以做到css兼容到react-native的css子集）
+     */</span>
+    <span class="hljs-class">.container</span> <span class="hljs-rules">{
+        <span class="hljs-rule"><span class="hljs-attribute">flex</span>:<span class="hljs-value"> <span class="hljs-number">1</span></span></span>;
+        <span class="hljs-rule"><span class="hljs-attribute">justifyContent</span>:<span class="hljs-value"> center</span></span>;
+        <span class="hljs-rule"><span class="hljs-attribute">alignItems</span>:<span class="hljs-value"> center</span></span>;
+        <span class="hljs-rule"><span class="hljs-attribute">backgroundColor</span>:<span class="hljs-value"> <span class="hljs-hexcolor">#F5FCFF</span></span></span>;
+    }</span>
+
+    <span class="hljs-class">.welcome</span> <span class="hljs-rules">{
+        <span class="hljs-rule"><span class="hljs-attribute">fontSize</span>:<span class="hljs-value"> <span class="hljs-number">20</span></span></span>;
+        <span class="hljs-rule"><span class="hljs-attribute">textAlign</span>:<span class="hljs-value"> center</span></span>;
+        <span class="hljs-rule"><span class="hljs-attribute">margin</span>:<span class="hljs-value"> <span class="hljs-number">10</span></span></span>;
+    }</span>
+
+    <span class="hljs-class">.instructions</span> <span class="hljs-rules">{
+        <span class="hljs-rule"><span class="hljs-attribute">textAlign</span>:<span class="hljs-value"> center</span></span>;
+        <span class="hljs-rule"><span class="hljs-attribute">color</span>:<span class="hljs-value"> <span class="hljs-hexcolor">#333333</span></span></span>;
+        <span class="hljs-rule"><span class="hljs-attribute">marginBottom</span>:<span class="hljs-value"> <span class="hljs-number">5</span></span></span>;
+    }</span>
+</code></pre>
+<p><strong>index.html</strong></p>
+<pre><code class="lang-html">    <span class="hljs-doctype">&lt;!DOCTYPE html&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">html</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-title">head</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">title</span>&gt;</span>Hello React!<span class="hljs-tag">&lt;/<span class="hljs-title">title</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">script</span> <span class="hljs-attribute">src</span>=<span class="hljs-value">"./react.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span>
+        <span class="hljs-comment">&lt;!-- No need for JSXTransformer! --&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-title">head</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-title">body</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"App"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">script</span> <span class="hljs-attribute">src</span>=<span class="hljs-value">"./index.web.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-title">body</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-title">html</span>&gt;</span>
+</code></pre>
+<h4 id="share-">Share部分的处理</h4>
+<p><strong>shared.js</strong></p>
+<pre><code class="lang-javascript">    <span class="hljs-keyword">var</span> Share = {};
+    <span class="hljs-keyword">var</span> React = require(<span class="hljs-string">'react-native'</span>);
+    <span class="hljs-keyword">var</span> isNative = !window.location;
+    <span class="hljs-comment">/**
+     * 判断是web的时候，重新赋值React
+     */</span>
+    <span class="hljs-keyword">if</span> (window.React) {
+        React = window.React;
+    } 
+    Share.React = React;
+
+    <span class="hljs-comment">/**
+     * 做底层的兼容， 当然这里只是做了一个最简demo，具体实现的时候可能会对props做各种兼容处理
+     */</span>
+    <span class="hljs-keyword">if</span> (!isNative) {
+
+        Share.View = React.createClass({
+            render: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+                <span class="hljs-keyword">return</span> &lt;div {...<span class="hljs-keyword">this</span>.props}/&gt;
+            }
+        });
+
+        Share.P = React.createClass({
+            render: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+                <span class="hljs-keyword">return</span> &lt;p {...<span class="hljs-keyword">this</span>.props}/&gt;
+            }
+        });
+
+        Share.Span = React.createClass({
+            render: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+                <span class="hljs-keyword">return</span> &lt;span {...<span class="hljs-keyword">this</span>.props}/&gt;
+            }
+        });
+    } <span class="hljs-keyword">else</span> {
+        <span class="hljs-comment">// alert('isNative')</span>
+        Share.View = React.View;
+        Share.P = React.Text;
+        Share.Span = React.Text;
+        Share.Text = React.Text;
+    }
+
+    module.exports = Share;
+</code></pre>
+<h4 id="build-">build打包程序</h4>
+<pre><code class="lang-javascript">    <span class="hljs-keyword">var</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);
+    <span class="hljs-keyword">var</span> nativeCSS = <span class="hljs-built_in">require</span>(<span class="hljs-string">'native-css'</span>),
+    <span class="hljs-keyword">var</span> cssObject = nativeCSS.convert(<span class="hljs-string">'./styles.css'</span>);
+
+    toStyleJs(cssObject, <span class="hljs-string">'./styles.js'</span>);
+    buildWebReact();
+
+    <span class="hljs-comment">/**
+     * native-css获取到得是一个对象，需要将cssObject转化为js代码
+     */</span>
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">toStyleJs</span><span class="hljs-params">(cssObject, name)</span> </span>{
+        <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'build styles.js \n'</span>);
+        <span class="hljs-keyword">var</span> tab = <span class="hljs-string">'    '</span>;
+        <span class="hljs-keyword">var</span> str = <span class="hljs-string">''</span>;
+
+        str += <span class="hljs-string">'/* build header */\n'</span>;
+        str += <span class="hljs-string">'var styles = {\n'</span>;
+
+        <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> key <span class="hljs-keyword">in</span> cssObject) {
+            <span class="hljs-keyword">var</span> rules = cssObject[key];
+            str += tab + key + <span class="hljs-string">': {\n'</span>;
+            <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> attr <span class="hljs-keyword">in</span> rules) {
+                <span class="hljs-keyword">var</span> rule = rules[attr];
+                str += tab + tab + attr + <span class="hljs-string">': '</span> + format(rule) + <span class="hljs-string">',\n'</span>
+            }
+            str += tab + <span class="hljs-string">'},\n'</span> 
+        }
+
+        str += <span class="hljs-string">'};\n'</span>
+        str += <span class="hljs-string">'module.exports = styles;\n'</span>
+
+        fs.writeFile(name, str)
+        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">format</span><span class="hljs-params">(rule)</span> </span>{
+            <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">isNaN</span>(rule - <span class="hljs-number">0</span>)) {
+                <span class="hljs-keyword">return</span> rule;
+            }
+            <span class="hljs-keyword">return</span> <span class="hljs-string">'"'</span> + rule + <span class="hljs-string">'"'</span>;
+        }
+    }
+
+    <span class="hljs-comment">/**
+     * 构造web使用的react
+     */</span>
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">buildWebReact</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'build web bundle'</span>);
+        <span class="hljs-keyword">var</span> browserify = <span class="hljs-built_in">require</span>(<span class="hljs-string">'browserify'</span>);
+        <span class="hljs-keyword">var</span> b = browserify();
+        b.add(<span class="hljs-string">'./index.web.js'</span>);
+
+        <span class="hljs-comment">// 添加es6支持</span>
+        b.transform(<span class="hljs-string">'reactify'</span>, {<span class="hljs-string">'es6'</span>: <span class="hljs-literal">true</span>});
+
+        <span class="hljs-comment">// ignore掉react-native </span>
+        b.ignore(<span class="hljs-string">'react-native'</span>)
+        <span class="hljs-keyword">var</span> wstream = fs.createWriteStream(<span class="hljs-string">'./web/index.web.js'</span>);
+        b.bundle().pipe(wstream);
+    }
+</code></pre>
+<h2 id="-react-native-react-web-">也尝试一下由react-native 到react-web的兼容方案</h2>
+<h3 id="-">问题</h3>
+<ol>
+<li>flexbox的写法在react-native上面我们会发现， 不用在父元素上声明<code>display: flex;</code> 在web上必须要做这样的声明， 所以我们需要让设置了<code>flex:*</code>的元素的父元素<code>display: flex;</code> 。</li>
+<li>flexbox在android上是由很多bug的，所以必须要解决兼容性问题<code>webkit-box</code>  </li>
+</ol>
+<h3 id="-">解决方案</h3>
+<h3 id="1-nested-style-">1. nested 的style写法</h3>
+<pre><code class="lang-javascript">    styles = StyleSheet.create({
+        <span class="hljs-keyword">mod</span>: {
+            flexDirection: 'row',
+            <span class="hljs-property">item</span>: {
+                flex: <span class="hljs-number">1</span>
+            }
+        }
+    });
+</code></pre>
+<p>这样的写法有些像less，我们可以知道元素的层级关系， 这样我可以遍历这个对象，查找子元素有设置flex的，父元素加上<code>display:flexbox</code>。 </p>
+<h3 id="2-">2. 通过自定义元素</h3>
+<pre><code class="lang-javascript"> var GridSystem = require(<span class="hljs-string">'GridSystem'</span>);
+ var <span class="hljs-list">{
+    Row,
+    Grid,
+    Grid6,
+    Grid4
+ }</span> = GridSystem;
+ &lt;<span class="hljs-keyword">Row</span> ...&gt;
+    &lt;<span class="hljs-keyword">Grid</span>/&gt;
+    &lt;<span class="hljs-keyword">Grid</span>/&gt;
+ &lt;/<span class="hljs-keyword">Row</span>&gt;
+</code></pre>
+<p>通过标签的方式， 相当于给react-native或者react添加了一个网格系统，同时我们可以直接在Row上设置<code>display:flex</code>.</p>
+<h3 id="3-">3. 遍历查找</h3>
+<p>完全同react-native原生的写法，直接在web中兼容，遍历所有有flex样式的节点，直接做兼容。</p>
+<pre><code class="lang-javascript">    componentDidMount: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">var</span> <span class="hljs-variable">$node</span> = this.getDOMNode();
+        <span class="hljs-keyword">var</span> <span class="hljs-variable">$parent</span> = <span class="hljs-variable">$node</span>.parentNode;
+        <span class="hljs-keyword">var</span> <span class="hljs-variable">$docfrag</span> = document.createDocumentFragment();
+        <span class="hljs-variable">$docfrag</span>.appendChild(<span class="hljs-variable">$node</span>);
+
+        <span class="hljs-keyword">var</span> treeWalker = document.createTreeWalker(<span class="hljs-variable">$node</span>, NodeFilter.SHOW_ELEMENT, { 
+            acceptNode: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(node)</span> </span>{ 
+                <span class="hljs-keyword">return</span> NodeFilter.FILTER_ACCEPT; 
+            } 
+        }, <span class="hljs-keyword">false</span>);
+
+        <span class="hljs-keyword">while</span>(treeWalker.nextNode()) {
+            <span class="hljs-keyword">var</span> node = treeWalker.currentNode;
+            <span class="hljs-keyword">if</span> (node.style.flex) {
+                flexChild(node);
+                flexParent(node.parentNode);
+            }
+        };
+
+        <span class="hljs-variable">$parent</span>.appendChild(<span class="hljs-variable">$docfrag</span>);
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">flexChild</span><span class="hljs-params">(node)</span> </span>{
+        <span class="hljs-keyword">if</span> (node.__flexchild__) {
+            <span class="hljs-keyword">return</span>;
+        }
+        node.__flexchild__ = <span class="hljs-keyword">true</span>;
+        <span class="hljs-keyword">var</span> flexGrow = node.style.flexGrow;
+        addStyle(node, `
+            -webkit-box-flex: ${flexGrow};
+            -webkit-flex: ${flexGrow};
+            -ms-flex: ${flexGrow};
+            flex: ${flexGrow};
+        `);
+        node.classList.add(<span class="hljs-string">'mui-flex-cell'</span>);
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">flexParent</span><span class="hljs-params">(node)</span> </span>{
+        <span class="hljs-keyword">if</span> (node.__flexparentd__) {
+            <span class="hljs-keyword">return</span>;
+        }
+        node.__flexparentd__ = <span class="hljs-keyword">true</span>;
+        node.classList.add(<span class="hljs-string">'mui-flex'</span>);
+    }
+</code></pre>
+<pre><code class="lang-css">    <span class="hljs-class">.mui-flex</span> <span class="hljs-rules">{
+        <span class="hljs-rule"><span class="hljs-attribute">display</span>:<span class="hljs-value"> -webkit-box<span class="hljs-important">!important</span></span></span>;
+        <span class="hljs-rule"><span class="hljs-attribute">display</span>:<span class="hljs-value"> -webkit-flex<span class="hljs-important">!important</span></span></span>;
+        <span class="hljs-rule"><span class="hljs-attribute">display</span>:<span class="hljs-value"> -ms-flexbox<span class="hljs-important">!important</span></span></span>;
+        <span class="hljs-rule"><span class="hljs-attribute">display</span>:<span class="hljs-value"> flex<span class="hljs-important">!important</span></span></span>;
+        <span class="hljs-rule"><span class="hljs-attribute">-webkit-flex-wrap</span>:<span class="hljs-value"> wrap</span></span>;
+        <span class="hljs-rule"><span class="hljs-attribute">-ms-flex-wrap</span>:<span class="hljs-value"> wrap</span></span>;
+        <span class="hljs-rule"><span class="hljs-attribute">flex-wrap</span>:<span class="hljs-value"> wrap</span></span>;
+        <span class="hljs-rule"><span class="hljs-attribute">-webkit-box-orient</span>:<span class="hljs-value"> vertical</span></span>;
+        <span class="hljs-rule"><span class="hljs-attribute">-webkit-box-direction</span>:<span class="hljs-value"> normal</span></span>;
+        <span class="hljs-rule"><span class="hljs-attribute">-webkit-flex-direction</span>:<span class="hljs-value"> column</span></span>;
+        <span class="hljs-rule"><span class="hljs-attribute">-ms-flex-direction</span>:<span class="hljs-value"> column</span></span>;
+        <span class="hljs-rule"><span class="hljs-attribute">flex-direction</span>:<span class="hljs-value"> column</span></span>;
+    }</span>
+
+    <span class="hljs-class">.mui-flex-cell</span> <span class="hljs-rules">{
+        <span class="hljs-rule"><span class="hljs-attribute">-webkit-flex-basis</span>:<span class="hljs-value"> <span class="hljs-number">0</span></span></span>;
+        <span class="hljs-rule"><span class="hljs-attribute">-ms-flex-preferred-size</span>:<span class="hljs-value"> <span class="hljs-number">0</span></span></span>;
+        <span class="hljs-rule"><span class="hljs-attribute">flex-basis</span>:<span class="hljs-value"> <span class="hljs-number">0</span></span></span>;
+        <span class="hljs-rule"><span class="hljs-attribute">max-width</span>:<span class="hljs-value"> <span class="hljs-number">100%</span></span></span>;
+        <span class="hljs-rule"><span class="hljs-attribute">display</span>:<span class="hljs-value"> block</span></span>;
+        <span class="hljs-rule"><span class="hljs-attribute">position</span>:<span class="hljs-value"> relative</span></span>;
+    }</span>
+</code></pre>
+<h2 id="-">总结</h2>
+<p>这个demo很简单，实际应用中应该会有很多地方的坑， 比如：</p>
+<ol>
+<li>模块中依赖只有native才有的组件</li>
+<li>Native模块的事件处理和web大不相同 </li>
+<li>现实环境中的模块更多，更复杂，如何做模块的管理</li>
+</ol>
+<p>对于<code>write once, run anywhere</code> 这个观点.  相信不同的人会有不同的看法，但无论如何，如果兼容成本不大，这样的兼容技术方案对业务开发是有极大意义的。</p>
+<p>ps0: 这里仅仅做可行性方案的分析，不代表我认同或不认同这种方案。<br>ps1: 大家如果有更好的方案，求教，求讨论。<br>ps2: 据说微博关注@sysu_学家不会怀孕 </p>
+
+                </section>
+                <h4 class="ui horizontal header divider">
+                    &lt;6174/&gt;
+                </h4>
+                <div id="disqus_thread"></div>
+            </article>
+
+            <script type="text/javascript">
+                /* * * CONFIGURATION VARIABLES * * */
+                var disqus_shortname = '6174';
+                
+                /* * * DON'T EDIT BELOW THIS LINE * * */
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+            <script>
+            var _hmt = _hmt || [];
+            (function() {
+              var hm = document.createElement("script");
+              hm.src = "//hm.baidu.com/hm.js?7b14384bfb6605e915ae92e70b916417";
+              var s = document.getElementsByTagName("script")[0]; 
+              s.parentNode.insertBefore(hm, s);
+            })();
+            </script>
+
+        </div>
+
+   </div>  
+</body>
+</html>

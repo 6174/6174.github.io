@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="../stylesheets/reset.css"/>
+        <link rel="stylesheet" type="text/css" href="../stylesheets/main.css"/>
+        <link rel="stylesheet" type="text/css" href="../stylesheets/article.css"/>
+        <title>6174's blog</title>
+    </head>
+<body>
+   <div class="page-article">
+        <nav class="site-nav" >
+            <div class="ui breadcrumb" >
+                <a href="http://6174.github.io/blog/">archive</a>
+            </div>
+        </nav>
+        <div class="fixcontainer">
+            <article class="article">
+                <header class="post-header">
+                    <h1 class="post-title"> 通过nodeclub源码来讲解如何做一个nodejs + express + mongodb项目</h1>
+                    <section class="post-meta">
+                        <a class="post-author" target="_blank" href="http://www.weibo.com/2254313183/profile"> &lt;6174/&gt;</a>
+                        创建于
+                        <time class="post-date"> 2014-4-22</time>
+                    </section>
+                    <hr/>
+                </header>
+                <section class="post-content">
+                    <h2 id="1-about-">1. About </h2>
+<ul>
+<li><p>1.1 <strong>what</strong>:<br>nodeclub是cnodejs.com的源码，cnode算是一个基本的博客系统，包含文章发布， 关注，评论等功能。这些功能可以说是任何一个网站的基础。从nodeclub里可以学到什么？</p>
+<ul>
+<li>1.基本的架构</li>
+<li>2.开发测试过程</li>
+<li>3.MVC的设计</li>
+<li>4.middleware 的正确用法</li>
+<li>5.如何设计mongodb schema</li>
+<li>6.如何正确的使用mongoose</li>
+<li>7.如何实现一个标签系统</li>
+<li>8.plugins? services ?</li>
+<li>9.如何正确的使用ejs helper</li>
+<li>10.到底该怎样写路由， restful？ </li>
+<li>11.如何做基本的控制验证</li>
+<li>12.如何发邮件</li>
+<li>13.session</li>
+<li>14.github 用户登录</li>
+<li>15.图片上传</li>
+<li>16.消息发送</li>
+</ul>
+<p>除了nodeclub源码的学习笔记以外， 还会有一点最近捣鼓这一块的经验分享</p>
+<ul>
+<li>1.一个完整的消息订阅设计</li>
+<li>2.消息推送, socket + express如何合作?</li>
+<li>3.包装action</li>
+<li>4.蛋疼的异步回调如何处理</li>
+</ul>
+<p><a href="https://github.com/cnodejs/nodeclub">nodeclub源码</a></p>
+</li>
+<li><p>1.2 <strong>why</strong>:<br>  对于想用<code>nodejs</code>  + <code>express</code> + <code>mongodb</code> 来做网站技术基础的项目， nodeclub可以说是很好的源码级指南，当然也是我的指南，这篇文章权当做个人学习nodeclub的学习笔记。</p>
+</li>
+<li><p>1.3 <strong>who</strong></p>
+<pre><code class="lang-coffee">who = 一名本应该在写前端的但不知怎的一直在写后端的马脓 -&gt; 
+  <span class="hljs-annotation">@echo</span> <span class="hljs-symbol">'github</span>: https:<span class="hljs-comment">//github.com/6174'</span>
+  <span class="hljs-annotation">@echo</span> <span class="hljs-symbol">'weibo</span>: http:<span class="hljs-comment">//weibo.com/u/2254313183'</span>
+  <span class="hljs-annotation">@echo</span> <span class="hljs-symbol">'email</span>: <span class="hljs-number">57017125</span><span class="hljs-annotation">@qq</span>.com'
+  <span class="hljs-annotation">@echo</span> <span class="hljs-symbol">'ps</span>: 一直在求后端partner中，有意者联系我' 
+  <span class="hljs-annotation">@send</span>()
+</code></pre>
+</li>
+</ul>
+<h2 id="2-nodeclude-">2. nodeclude 中用到了哪些开源技术</h2>
+<ul>
+<li><p>2.1 nodejs项目一大优点就是有一个package.json,  里边的dependencies &amp; devDependencies可以看到这个项目所有的依赖。 对于有经验的开发者来说， 看完package.json基本就能知道项目的架构是怎样。 </p>
+</li>
+<li><p>2.2 <strong>dependencies</strong></p>
+<ul>
+<li><code>express</code>: 基础框架：</li>
+<li><code>mongodb</code>: 数据存储 </li>
+<li><code>mongoose</code>: orm </li>
+<li><code>connect-mongo</code>: session （对于redis， 可以使用connect-redis）</li>
+<li><code>nodemailer</code>：邮件 </li>
+<li><code>validator</code>：验证 </li>
+<li><code>passport</code>，<code>passport-github</code>： passport， </li>
+<li><code>loader</code>: ejs-view-helper, 静态资源加载处理</li>
+<li>其他： <code>event-proxy</code>, <code>node-markdown</code>, <code>ndir</code></li>
+</ul>
+</li>
+<li><p>2.3 <strong>devDependencies</strong></p>
+<ul>
+<li>测试框架：<code>mocha</code>, <code>should</code> </li>
+<li>运行： <code>forever</code></li>
+<li>请求模拟: <code>supertest</code></li>
+</ul>
+</li>
+<li><p>2.4 nodeclub以express + mongodb + mongoose作为基本框架, 典型的MVC应用</p>
+<ul>
+<li><strong>Model</strong>: 对应mongoose orm， models目录</li>
+<li><strong>view</strong>： ejs模板， views目录</li>
+<li><strong>controler</strong>：express middleware , contollers目录 </li>
+</ul>
+</li>
+<li><p>2.5 目录结构：</p>
+<pre><code class="lang-coffee"> -<span class="ruby"> common/
+</span> -<span class="ruby"> controllers/
+</span> -<span class="ruby"> libs/
+</span> # express中间件， 基本的auth， session 验证
+ -<span class="ruby"> middlewares/
+</span> -<span class="ruby"> models/
+</span> #消息， 邮件服务
+ -<span class="ruby"> services/
+</span> -<span class="ruby"> plugins/
+</span> #可以看做是对model处理的加工库
+ -<span class="ruby"> proxy/
+</span> -<span class="ruby"> test/
+</span> -<span class="ruby"> views/
+</span> -<span class="ruby"> app.js
+</span> -<span class="ruby"> route.js
+</span> -<span class="ruby"> config.js</span>
+</code></pre>
+</li>
+</ul>
+<h2 id="3-app-js">3. 应用入口app.js</h2>
+<p>神圣的入口文件，几乎每个项目都会有一个entry，对于了解一个应用熟悉入口逻辑很重要。 下面将分步来看看，nodeclub的app.js做了什么：</p>
+<h3 id="3-1-require-config-">3.1 require(./config)</h3>
+<ul>
+<li><p>3.1.1 应用相关的配置的设置， 主要分为</p>
+<ul>
+<li>1.应用全局数据配置</li>
+<li>2.数据库连接配置</li>
+<li>3.session，auth相关配置</li>
+<li>4.rss配置</li>
+<li>5.mail配置</li>
+<li>6.第三方连接相关配置， github， weibo</li>
+</ul>
+<p>配置文件也是了解应用的一个好地方， 在config.default.js中可以看到以下信息, 这些很可能是我们平时做应用开发的时候没有留意到的地方</p>
+</li>
+</ul>
+<pre><code class="lang-javascript">  <span class="hljs-comment">//--应用数据统计</span>
+<span class="hljs-label">  google_tracker_id:</span> <span class="hljs-string">'UA-41753901-5'</span>,
+
+  <span class="hljs-comment">//--静态文件很可能使用cdn来做</span>
+<span class="hljs-label">  site_static_host:</span> <span class="hljs-string">''</span>, <span class="hljs-comment">// 静态文件存储域名</span>
+
+  <span class="hljs-comment">//--求解释</span>
+<span class="hljs-label">  site_enable_search_preview:</span> <span class="hljs-literal">false</span>, <span class="hljs-comment">// 开启google search preview</span>
+<span class="hljs-label">  site_google_search_domain:</span>  <span class="hljs-string">'cnodejs.org'</span>,  <span class="hljs-comment">// google search preview中要搜索的域名</span>
+
+  <span class="hljs-comment">//--运营数据</span>
+<span class="hljs-label">  list_topic_count:</span> <span class="hljs-number">20</span>,
+<span class="hljs-label">  post_interval:</span> <span class="hljs-number">10000</span>,
+<span class="hljs-label">  admins:</span> { <span class="hljs-string">admin:</span> <span class="hljs-literal">true</span> },
+<span class="hljs-label">  side_ads:</span>[]
+<span class="hljs-label">  allow_sign_up:</span> <span class="hljs-literal">true</span>,
+
+  <span class="hljs-comment">//--插件模式</span>
+<span class="hljs-label">  plugins:</span> []
+</code></pre>
+<ul>
+<li>3.1.2 当然这里的配置文件是default的，配置文件可以放在一个config的文件夹下面，多个文件的方式来整理。比如运营数据配置和其他数据配置分开，因为很有可能需要做一个小的工具来让非技术人员配置相关参数。这时候可以用一个index.js作为facade，相当于一个大的node module。 </li>
+</ul>
+<h3 id="3-2-require-models-">3.2 require(&#39;./models&#39;)</h3>
+<ul>
+<li>3.2.1 之前已经讲了models目录对应MVC的M部分。 </li>
+<li>3.2.2 models目录下面有index.js, require(&#39;./models&#39;)相当于require(&#39;./models/index&#39;)<br>index相当于一个模型的facade, index.js做得事情分别是<ul>
+<li>1.connect mongodb </li>
+<li>2.require各个model模块</li>
+<li>3.exports 所有的model<br>简单而言就是初始化了应用model层。 </li>
+</ul>
+</li>
+<li><p>3.2.3 模型使用orm框架mogoose来写，了解mogoose过后， models部分的代码也就是秒懂了<br>， 我说的只是代码，literaly, 一个项目的核心就是model的设计，以前做过的任何项目都是一样， 数据库table的设计好坏直接影响应用的开发以及性能。 下面来看看各个model的schema设计(几乎直接ctr+c, ctr+v加上了一点点注释) :</p>
+</li>
+<li><p>3.2.4 user </p>
+<pre><code class="lang-javascript">  <span class="hljs-keyword">var</span> UserSchema = <span class="hljs-keyword">new</span> Schema({
+        <span class="hljs-comment">//--基本用户信息， index表示在mongodb中会建立索引</span>
+        <span class="hljs-comment">//--unique: true 唯一性设置</span>
+        name: { <span class="hljs-keyword">type</span>: <span class="hljs-built_in">String</span>, index: <span class="hljs-literal">true</span> },
+        loginname: { <span class="hljs-keyword">type</span>: <span class="hljs-built_in">String</span>, unique: <span class="hljs-literal">true</span> },
+        pass: { <span class="hljs-keyword">type</span>: <span class="hljs-built_in">String</span> },
+        email: { <span class="hljs-keyword">type</span>: <span class="hljs-built_in">String</span>, unique: <span class="hljs-literal">true</span> },
+        url: { <span class="hljs-keyword">type</span>: <span class="hljs-built_in">String</span> },
+        profile_image_url: {<span class="hljs-keyword">type</span>: <span class="hljs-built_in">String</span>},
+        location: { <span class="hljs-keyword">type</span>: <span class="hljs-built_in">String</span> },
+        signature: { <span class="hljs-keyword">type</span>: <span class="hljs-built_in">String</span> },
+        profile: { <span class="hljs-keyword">type</span>: <span class="hljs-built_in">String</span> },
+        weibo: { <span class="hljs-keyword">type</span>: <span class="hljs-built_in">String</span> },
+        avatar: { <span class="hljs-keyword">type</span>: <span class="hljs-built_in">String</span> },
+        githubId: { <span class="hljs-keyword">type</span>: <span class="hljs-built_in">String</span>, index: <span class="hljs-literal">true</span> },
+        githubUsername: {<span class="hljs-keyword">type</span>: <span class="hljs-built_in">String</span>},
+        is_block: {<span class="hljs-keyword">type</span>: <span class="hljs-built_in">Boolean</span>, <span class="hljs-keyword">default</span>: <span class="hljs-literal">false</span>},
+
+        <span class="hljs-comment">//--用户产生数据meta</span>
+        score: { <span class="hljs-keyword">type</span>: <span class="hljs-built_in">Number</span>, <span class="hljs-keyword">default</span>: <span class="hljs-number">0</span> },
+        topic_count: { <span class="hljs-keyword">type</span>: <span class="hljs-built_in">Number</span>, <span class="hljs-keyword">default</span>: <span class="hljs-number">0</span> },
+        reply_count: { <span class="hljs-keyword">type</span>: <span class="hljs-built_in">Number</span>, <span class="hljs-keyword">default</span>: <span class="hljs-number">0</span> },
+        follower_count: { <span class="hljs-keyword">type</span>: <span class="hljs-built_in">Number</span>, <span class="hljs-keyword">default</span>: <span class="hljs-number">0</span> },
+        following_count: { <span class="hljs-keyword">type</span>: <span class="hljs-built_in">Number</span>, <span class="hljs-keyword">default</span>: <span class="hljs-number">0</span> },
+        collect_tag_count: { <span class="hljs-keyword">type</span>: <span class="hljs-built_in">Number</span>, <span class="hljs-keyword">default</span>: <span class="hljs-number">0</span> },
+        collect_topic_count: { <span class="hljs-keyword">type</span>: <span class="hljs-built_in">Number</span>, <span class="hljs-keyword">default</span>: <span class="hljs-number">0</span> },
+        create_at: { <span class="hljs-keyword">type</span>: <span class="hljs-built_in">Date</span>, <span class="hljs-keyword">default</span>: <span class="hljs-built_in">Date</span>.now },
+        update_at: { <span class="hljs-keyword">type</span>: <span class="hljs-built_in">Date</span>, <span class="hljs-keyword">default</span>: <span class="hljs-built_in">Date</span>.now },
+        is_star: { <span class="hljs-keyword">type</span>: <span class="hljs-built_in">Boolean</span> },
+        level: { <span class="hljs-keyword">type</span>: <span class="hljs-built_in">String</span> },
+        active: { <span class="hljs-keyword">type</span>: <span class="hljs-built_in">Boolean</span>, <span class="hljs-keyword">default</span>: <span class="hljs-literal">true</span> },
+
+        <span class="hljs-comment">//-mail</span>
+        receive_reply_mail: {<span class="hljs-keyword">type</span>: <span class="hljs-built_in">Boolean</span>, <span class="hljs-keyword">default</span>: <span class="hljs-literal">false</span> },
+        receive_at_mail: { <span class="hljs-keyword">type</span>: <span class="hljs-built_in">Boolean</span>, <span class="hljs-keyword">default</span>: <span class="hljs-literal">false</span> },
+        from_wp: { <span class="hljs-keyword">type</span>: <span class="hljs-built_in">Boolean</span> },
+        retrieve_time : {<span class="hljs-keyword">type</span>: <span class="hljs-built_in">Number</span>},
+        retrieve_key : {<span class="hljs-keyword">type</span>: <span class="hljs-built_in">String</span>}
+      });
+</code></pre>
+</li>
+</ul>
+<ul>
+<li><p>3.2.5 topic 话题</p>
+<pre><code class="lang-javascript">
+      <span class="hljs-comment">//1 &lt;- 多</span>
+      <span class="hljs-comment">//tag &lt;- topic &lt;- collect  </span>
+      <span class="hljs-keyword">var</span> <span class="hljs-type">TopicSchema</span> = <span class="hljs-keyword">new</span> <span class="hljs-type">Schema</span>({
+        title: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">String</span> },
+        content: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">String</span> },
+        author_id: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">ObjectId</span> },
+        top: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">Boolean</span>, <span class="hljs-keyword">default</span>: <span class="hljs-literal">false</span> },
+        reply_count: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">Number</span>, <span class="hljs-keyword">default</span>: <span class="hljs-number">0</span> },
+        visit_count: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">Number</span>, <span class="hljs-keyword">default</span>: <span class="hljs-number">0</span> },
+        collect_count: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">Number</span>, <span class="hljs-keyword">default</span>: <span class="hljs-number">0</span> },
+        create_at: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">Date</span>, <span class="hljs-keyword">default</span>: <span class="hljs-type">Date</span>.now },
+        update_at: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">Date</span>, <span class="hljs-keyword">default</span>: <span class="hljs-type">Date</span>.now },
+        <span class="hljs-comment">//--这里reply的设计方式不知道是否合适， 因为mongdb不同于关系型数据库，这里每次读取文章都需要重reply集合里边查找遍历一边，文章是读繁忙的。</span>
+        <span class="hljs-comment">//-- 一个document的大小为5Mb， 一本牛津词典的内容， 我觉得将reply放在这里应该不会有太大问题。 即便不存放reply 内容， 存放一个id数组也会好很多。</span>
+        <span class="hljs-comment">//-- 客官们怎么看?  </span>
+        last_reply: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">ObjectId</span> },
+        last_reply_at: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">Date</span>, <span class="hljs-keyword">default</span>: <span class="hljs-type">Date</span>.now },
+        content_is_html: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">Boolean</span> }
+      });
+
+      <span class="hljs-keyword">var</span> <span class="hljs-type">ReplySchema</span> = <span class="hljs-keyword">new</span> <span class="hljs-type">Schema</span>({
+        content: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">String</span> },
+        topic_id: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">ObjectId</span>, index: <span class="hljs-literal">true</span> },
+        author_id: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">ObjectId</span> },
+        reply_id : { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">ObjectId</span> },
+        create_at: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">Date</span>, <span class="hljs-keyword">default</span>: <span class="hljs-type">Date</span>.now },
+        update_at: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">Date</span>, <span class="hljs-keyword">default</span>: <span class="hljs-type">Date</span>.now },
+        content_is_html: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">Boolean</span> }
+      });
+
+      <span class="hljs-comment">//--话题集合</span>
+      <span class="hljs-keyword">var</span> <span class="hljs-type">TopicCollectSchema</span> = <span class="hljs-keyword">new</span> <span class="hljs-type">Schema</span>({
+        user_id: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">ObjectId</span> },
+        topic_id: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">ObjectId</span> },
+        create_at: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">Date</span>, <span class="hljs-keyword">default</span>: <span class="hljs-type">Date</span>.now }
+      });
+
+      <span class="hljs-comment">//--话题标签</span>
+      <span class="hljs-keyword">var</span> <span class="hljs-type">TopicTagSchema</span> = <span class="hljs-keyword">new</span> <span class="hljs-type">Schema</span>({
+        topic_id: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">ObjectId</span> },
+        tag_id: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">ObjectId</span> },
+        create_at: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">Date</span>, <span class="hljs-keyword">default</span>: <span class="hljs-type">Date</span>.now }
+      });
+</code></pre>
+</li>
+<li><p>3.2.6 tag<br>标签系统</p>
+<pre><code class="lang-javascript">      <span class="hljs-comment">//tag &lt;- collect</span>
+      <span class="hljs-keyword">var</span> <span class="hljs-type">TagSchema</span> = <span class="hljs-keyword">new</span> <span class="hljs-type">Schema</span>({
+        name: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">String</span> },
+        order: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">Number</span>, <span class="hljs-keyword">default</span>: <span class="hljs-number">1</span> },
+        description: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">String</span> },
+        background: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">String</span> },
+        topic_count: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">Number</span>, <span class="hljs-keyword">default</span>: <span class="hljs-number">0</span> },
+        collect_count: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">Number</span>, <span class="hljs-keyword">default</span>: <span class="hljs-number">0</span> },
+        create_at: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">Date</span>, <span class="hljs-keyword">default</span>: <span class="hljs-type">Date</span>.now }
+      });
+
+      <span class="hljs-keyword">var</span> <span class="hljs-type">TagCollectSchema</span> = <span class="hljs-keyword">new</span> <span class="hljs-type">Schema</span>({
+        user_id: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">ObjectId</span>, index: <span class="hljs-literal">true</span> },
+        tag_id: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">ObjectId</span> },
+        create_at: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">Date</span>, <span class="hljs-keyword">default</span>: <span class="hljs-type">Date</span>.now }
+      });
+</code></pre>
+</li>
+<li><p>3.2.7 关系 </p>
+<pre><code class="lang-javascript">      <span class="hljs-keyword">var</span> <span class="hljs-type">RelationSchema</span> = <span class="hljs-keyword">new</span> <span class="hljs-type">Schema</span>({
+        user_id: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">ObjectId</span> },
+        follow_id: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">ObjectId</span> },
+        create_at: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">Date</span>, <span class="hljs-keyword">default</span>: <span class="hljs-type">Date</span>.now }
+      });
+</code></pre>
+</li>
+<li><p>3.2.8 消息<br>消息model设计， 对于一个blog来说， 基本的只有回复消息， 这里加了关注和@消息。 </p>
+<pre><code class="lang-javascript">  <span class="hljs-comment">/*
+   * type:
+   * reply: xx 回复了你的话题
+   * reply2: xx 在话题中回复了你
+   * follow: xx 关注了你
+   * at: xx ＠了你
+   */</span>
+  <span class="hljs-keyword">var</span> <span class="hljs-type">MessageSchema</span> = <span class="hljs-keyword">new</span> <span class="hljs-type">Schema</span>({
+    <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">String</span> },
+    master_id: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">ObjectId</span>, index: <span class="hljs-literal">true</span> },
+    author_id: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">ObjectId</span> },
+    topic_id: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">ObjectId</span> },
+    reply_id: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">ObjectId</span> },
+    has_read: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">Boolean</span>, <span class="hljs-keyword">default</span>: <span class="hljs-literal">false</span> },
+    create_at: { <span class="hljs-class"><span class="hljs-keyword">type</span>:</span> <span class="hljs-type">Date</span>, <span class="hljs-keyword">default</span>: <span class="hljs-type">Date</span>.now }
+  });
+</code></pre>
+</li>
+</ul>
+<h3 id="3-3-require-middlewares">3.3 require middlewares</h3>
+<ul>
+<li><p>3.3.1 express的基础是middleware，或者说express的基础是connect，connect的基础是middleware。middleware模式在professional nodejs中有一个专门的章节来讲解。何为middleware呢？ middleware模式 相当于一个加工流水线（大家叫middleware stack），每一个middleware相当于一个加工步骤，当出现一个http请求的时候，http请求会挨着每个middleware执行下去。<br>express里处理一个请求的过程基本上就是请求通过middleware stack的过程：  * -&gt; middlewares -&gt; 路由 -&gt; controllers -&gt; errorhandlering。 </p>
+</li>
+<li><p>3.3.2 middleware 怎样做到的， 异步的方法呢？ middleware使用promise的方式来处理异步，所有每个middleware都有三个参数req, res, next, 对于异步的情况， 必须要调用next()方法。不然后续的middleware就无法执行。 ps: debug 的时候没调用next()还不会报错，一定注意</p>
+</li>
+<li><p>3.3.3 auth.js<br>auth.js exports出来的函数全部都是中间件，从变量名就完全清楚的知道到底在做什么了</p>
+<pre><code class="lang-javascript">
+  //<span class="hljs-comment">-- 需要admin权限</span>
+  exports.adminRequired = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(req, res, next)</span></span> {}
+
+  //<span class="hljs-comment">-- 需要有用户</span>
+  exports.userRequired = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(req, res, next)</span></span> {}
+
+  //<span class="hljs-comment">-- 需要有用户并登录</span>
+  exports.signinRequired = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(req, res, next)</span></span> {
+      <span class="hljs-keyword">if</span> (!req.session.user) {
+          res.render(<span class="hljs-string">'notify/notify'</span>, {<span class="hljs-built_in">error</span>: <span class="hljs-string">'未登入用户不能发布话题。'</span>});
+          <span class="hljs-keyword">return</span>;
+      }
+      <span class="hljs-built_in">next</span>();   
+  }
+
+  //<span class="hljs-comment">-- 屏蔽用户 -_-</span>
+  exports.blockUser = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(req, res, next)</span></span> {}
+</code></pre>
+<p>这里其实就可以看到中间件的作用了，我们以前写php的时候每次都需要判断用户是否登录， 没登陆redirect到index.php ，只不过这里的方式是通过中间件来处理。<br>明白这里什么意思，其他的中间件模块也就秒懂了。 </p>
+</li>
+</ul>
+<h3 id="3-4-require-routes-">3.4 require(&#39;./routes&#39;)</h3>
+<ul>
+<li><p>3.4.1 express 的世界里另外一个很重要的就是route， nodejs启动的是服务， 监听了某一端口， 接受http or https or sockt请求,   那url中像&quot;/index.php?blabla&quot;这一串的存在怎么处理呢， express的route功能就可以帮我们解析。 </p>
+</li>
+<li><p>3.4.2 MVC中如何将一个请求和controller联系起来呢， route就是这样的纽带</p>
+<pre><code class="lang-javascript">//--<span class="hljs-built_in">get</span>, post 请求
+app.<span class="hljs-built_in">get</span>(<span class="hljs-string">'/signin'</span>, <span class="hljs-keyword">sign</span>.showLogin);
+app.post(<span class="hljs-string">'/signin'</span>, <span class="hljs-keyword">sign</span>.login);
+//--使用中间件
+app.<span class="hljs-built_in">get</span>(<span class="hljs-string">'/signup'</span>, configMiddleware.github, passport.authenticate(<span class="hljs-string">'github'</span>));
+app.post(<span class="hljs-string">'/:topic_id/reply'</span>, auth.userRequired, limit.postInterval, reply.<span class="hljs-built_in">add</span>);
+</code></pre>
+</li>
+<li><p>3.4.3 route是了解一个应用最佳的地方，一个请求如何处理， 到相应的controller去看就知道了。 相比起在PHP环境下配置更加灵活。当然你说你通过nginx来配置也很灵活，好吧，我们说的不是一回事。 </p>
+</li>
+</ul>
+<h3 id="3-5-initialization">3.5 initialization</h3>
+<ul>
+<li><p>3.5.1 experess initialize: app.js 中其他大多部分就是express的初始化了， 初始化流程如下：</p>
+<ul>
+<li>1.配置上传 upload_dir</li>
+<li>2.模板引擎设置 </li>
+<li>3.express通用中间件设置 </li>
+<li>4.pasport中间件</li>
+<li>5.自定义中间件 <ul>
+<li>1.auth_user</li>
+<li>2.block_user</li>
+<li>3.staticfile: upload </li>
+<li>4.staticfile: user_data</li>
+</ul>
+</li>
+<li>6.csrf</li>
+<li>7.errorhandler</li>
+<li>8.set view cache</li>
+</ul>
+<p><code>@Note</code>：配置的顺序很重要， 中间件的执行顺序是按照定义顺序来执行的， 如果一个中间件依赖另外的中间件， 而自己先执行了， 这种情况就会错误。 常见的问题就是session配置， 一定要记得配置session中间件的时候， 要先配置cookieParser。 </p>
+</li>
+<li>3.5.2 session设置<br>这个步骤在initialize里边已经有了， 不过再单独讲一下， nodeclub使用的是connect-mongo来作为session的存储<pre><code class="lang-javascript">  <span class="hljs-comment">//--cookieParser一定要在前面， 因为session的设置依赖cookie</span>
+  <span class="hljs-keyword">app</span>.<span class="hljs-keyword">use</span>(express.cookieParser());
+  <span class="hljs-keyword">app</span>.<span class="hljs-keyword">use</span>(express.session({
+    secret: config.session_secret,
+    store: new MongoStore({
+      <span class="hljs-keyword">db</span>: config.db_name,
+    }),
+  }));
+</code></pre>
+</li>
+<li>3.5.3 view helpers<br>使用过ejs的肯定知道， ejs里边view helper设置很简单， 就像赋值变量一样。 当对于一些通用的helper可以这样设置：<pre><code class="lang-javascript">      <span class="hljs-tag">app</span><span class="hljs-class">.helpers</span>({
+        <span class="hljs-attribute">config</span>: config,
+        <span class="hljs-attribute">Loader</span>: Loader,
+        <span class="hljs-attribute">assets</span>: assets
+      });
+      <span class="hljs-tag">app</span><span class="hljs-class">.dynamicHelpers</span>(<span class="hljs-function">require</span>(<span class="hljs-string">'./common/render_helpers'</span>));
+</code></pre>
+</li>
+<li>3.5.4 github pasport  initialize<br>```javascript  <pre><code>  <span class="hljs-comment">// github oauth</span>
+  passport.serializeUser(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(user, done)</span> </span>{
+    done(<span class="hljs-literal">null</span>, user);
+  });
+  passport.deserializeUser(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(user, done)</span> </span>{
+    done(<span class="hljs-literal">null</span>, user);
+  });
+  passport.<span class="hljs-keyword">use</span>(<span class="hljs-keyword">new</span> GitHubStrategy(config.GITHUB_OAUTH, 
+</code></pre>githubStrategyMiddleware));</li>
+</ul>
+<pre><code>
+<span class="hljs-comment">* 3.5.5 start app</span>
+
+
+4. 用户注册
+---
+<span class="hljs-comment">* 4.1 user 是每个应用都会处理的基本， 注册登录登出， 看看nodeclub做了哪些事情：</span>
+<span class="hljs-comment">* 4.2 路由：</span>
+```javascript
+  <span class="hljs-comment">//--设置能否直接注册， 不能的话通过github注册</span>
+  <span class="hljs-keyword">if</span> (config.allow_sign_up) {
+    <span class="hljs-keyword">app</span>.<span class="hljs-literal">get</span>('/signup', sign.showSignup);
+    <span class="hljs-keyword">app</span>.<span class="hljs-keyword">post</span>('/signup', sign.signup);
+  } <span class="hljs-keyword">else</span> {
+    <span class="hljs-keyword">app</span>.<span class="hljs-literal">get</span>('/signup', configMiddleware.github, passport.authenticate('github'));
+  }
+  <span class="hljs-keyword">app</span>.<span class="hljs-keyword">post</span>('/signout', sign.signout);
+  <span class="hljs-keyword">app</span>.<span class="hljs-literal">get</span>('/signin', sign.showLogin);
+  <span class="hljs-keyword">app</span>.<span class="hljs-keyword">post</span>('/signin', sign.login);
+</code></pre><ul>
+<li>4.3 controller &amp; model：sign.signup<pre><code class="lang-javascript">  sanitize = validator.sanitize;
+  check = validator.check;
+  exports.signup = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(req, res, next)</span> </span>{
+    <span class="hljs-comment">//--xss 消毒</span>
+    <span class="hljs-keyword">var</span> name = sanitize(req.body.name).trim();
+    name = sanitize(name).xss();
+    ...
+    <span class="hljs-comment">//--validations</span>
+    <span class="hljs-keyword">try</span> {
+      check(name, <span class="hljs-string">'用户名只能使用0-9，a-z，A-Z。'</span>).isAlphanumeric();
+    } <span class="hljs-keyword">catch</span> (e) {
+      res.render(<span class="hljs-string">'sign/signup'</span>, {error: e.message, name: name, email: email});
+      <span class="hljs-keyword">return</span>;
+    }
+    ...
+    <span class="hljs-comment">//--用用户名登录或者email登录</span>
+    query = {<span class="hljs-string">'$or'</span>: [{<span class="hljs-string">'loginname'</span>: loginname}, {<span class="hljs-string">'email'</span>: email}]}
+    User.getUserByQuery(query, {}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{
+      ...
+      pass = md5(pass);
+      ...
+      User.newAndSave(name, loginname, pass, email, avatar_url, <span class="hljs-literal">false</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err)</span> </span>{
+        ...
+        <span class="hljs-comment">// 发送激活邮件</span>
+        mail.sendActiveMail(email, md5(email + config.session_secret), name);
+        res.render(<span class="hljs-string">'sign/signup'</span>, {
+          success: <span class="hljs-string">'欢迎加入 '</span> + config.name + <span class="hljs-string">'！我们已给您的注册邮箱发送了一封邮件，请点击里面的链接来激活您的帐号。'</span>
+        });
+      })
+    })
+  }
+</code></pre>
+</li>
+</ul>
+<h2 id="5-mongoose-">5. mongoose 的使用</h2>
+<ul>
+<li>5.1 使用User.newAndSave， </li>
+<li>5.2 异步 callback pyramid<br>一个应用通常会遇到这样的情景， 一个页面需要的数据包括， 文章列表， 评论列表，用户数据，广告数据， other stuff...   问题是每个都是异步的， 怎么办。 user数据获取过后的callback调用文章列表获取， 文章列表获取的callback调用评论列表的获取... 这样就太蛋疼了。  nodeclub使用了eventproxy模块优雅的解决这样的问题：<pre><code class="lang-javascript">  render = <span class="hljs-keyword">function(){</span><span class="hljs-keyword">}</span>
+  var <span class="hljs-literal">proxy</span> = <span class="hljs-constant">Event</span>Proxy.create(<span class="hljs-string">'tags'</span>, <span class="hljs-string">'topics'</span>, <span class="hljs-string">'hot_topics'</span>, <span class="hljs-string">'stars'</span>, <span class="hljs-string">'tops'</span>, <span class="hljs-string">'no_reply_topics'</span>, <span class="hljs-string">'pages'</span>, render);
+  <span class="hljs-literal">proxy</span>.fail(next);
+  <span class="hljs-constant">Tag</span>.getAllTags(<span class="hljs-literal">proxy</span>.done(<span class="hljs-string">'tags'</span>));
+  <span class="hljs-constant">Topic</span>.getTopicsByQuery(query, <span class="hljs-literal">options</span>, <span class="hljs-literal">proxy</span>.done(<span class="hljs-string">'topics'</span>));
+  <span class="hljs-constant">User</span>.<span class="hljs-keyword">getUsersByQuery({</span> is_star: <span class="hljs-keyword">true</span> <span class="hljs-keyword">}</span>, <span class="hljs-keyword">{</span> limit: <span class="hljs-number">5</span> <span class="hljs-keyword">}</span>, <span class="hljs-literal">proxy</span>.done(<span class="hljs-string">'stars'</span>));
+</code></pre>
+ 看完代码不言而喻。。。<br> 当然异步处理的方法有很多: <ul>
+<li>1.基于事件的：eventProxy</li>
+<li>2.基于promise的：Async.js Q.js, when.js</li>
+<li>3.基于编译的：continuation, wind</li>
+<li>4.基于语言语法的：yield， livescript<br>文章最后会讲一下我我的异步选择方案</li>
+</ul>
+</li>
+</ul>
+<h2 id="6-">6. 消息</h2>
+<ul>
+<li>6.1 原先以为有动态的消息推送， 有队列处理， 错了， 木有</li>
+<li>6.2 在sublime text里边全局搜索sendReply2Message会发现是在controller/reply.js里边调用的， 也就是说，消息是直接触发的。 </li>
+<li>6.3 好吧， 这部分大概大家都能秒懂。。</li>
+</ul>
+<h2 id="7-">7. 开发</h2>
+<h3 id="7-1-">7.1 测试</h3>
+<ul>
+<li>7.1.1 一个项目必定离不开测试， nodeclub基于mocha BDD测试框架， 一切的前提假设至少能看懂jasmine或者mocha或者任何一个BDD风格的测试代码。 </li>
+<li><p>7.1.2  打开即看到app.js</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">var</span> app = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../app'</span>);
+describe(<span class="hljs-string">'app.js'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+  <span class="hljs-comment">//--before， 执行it的前面会执行</span>
+  before(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(done)</span> </span>{
+    <span class="hljs-comment">//--done, 异步方法</span>
+    app.listen(<span class="hljs-number">3001</span>, done);
+  });
+  after(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+    app.close();
+  });
+  it(<span class="hljs-string">'should / status 200'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(done)</span> </span>{
+    <span class="hljs-comment">//--使用 app.request()就可以模拟请求了？ 这个api哪里来的， 求解释？</span>
+    app.request().get(<span class="hljs-string">'/'</span>).end(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(res)</span> </span>{
+      res.should.status(<span class="hljs-number">200</span>);
+      done();
+    });
+  });
+});
+<span class="hljs-comment">//--按理说应该是可以正常运行了但是我一直出现这个错误:</span>
+<span class="hljs-comment">//--connect ADDRNOTAVAIL 知道的求解释</span>
+<span class="hljs-comment">//--我尝试用supertest直接测试， 但是也是一直timeout， mocha</span>
+<span class="hljs-comment">//--里边加大timeout时间， 结果就是一直没反应。 </span>
+
+<span class="hljs-comment">//--分析原因， express版本问题， nodeclub中express的版本还是2.x, 所以才会有</span>
+<span class="hljs-comment">//--app.request(), app.close()这些api</span>
+<span class="hljs-comment">//--第二个原因， 到supertest官网， 发现人家都已经转战到superagent项目了， 于是我写了下面这个测试脚本， 可以通过了</span>
+<span class="hljs-keyword">var</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">'express'</span>);
+<span class="hljs-keyword">var</span> should = <span class="hljs-built_in">require</span>(<span class="hljs-string">'should'</span>);
+<span class="hljs-keyword">var</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>);
+<span class="hljs-keyword">var</span> superagent = <span class="hljs-built_in">require</span>(<span class="hljs-string">'superagent'</span>);
+<span class="hljs-keyword">var</span> app = express()
+app.get(<span class="hljs-string">'/user'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res, next)</span> </span>{
+    res.send(<span class="hljs-number">200</span>, {
+        name: <span class="hljs-string">'tobi'</span>
+    })
+})
+describe(<span class="hljs-string">'myapp.js'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">this</span>.timeout(<span class="hljs-number">5000</span>)
+    before(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(done)</span> </span>{
+        app.listen(<span class="hljs-number">21</span>, done);
+    })
+    after(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-comment">// app.close()</span>
+    })
+    it(<span class="hljs-string">'should /status 200'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(done)</span> </span>{
+        agent = superagent.agent()
+        agent.get(<span class="hljs-string">'http://localhost:21/user'</span>).end(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, res)</span> </span>{
+          <span class="hljs-built_in">console</span>.log(err, res)
+          res.should.have.status(<span class="hljs-number">200</span>);
+          res.text.should.include(<span class="hljs-string">'tobi'</span>);
+          <span class="hljs-keyword">return</span> done();
+        });
+    })
+})
+</code></pre>
+</li>
+</ul>
+<h3 id="7-2-">7.2 运行</h3>
+<ul>
+<li>nodejs是单线程应用， 如果我们用node命令来运行我们的应用， 当出现一个小错误， 它就挂了。 然后没有然后了。  避免这种问题的方法有如下工具：<ul>
+<li>1.forever</li>
+<li>2.nodemon</li>
+<li>3.supervisor<br>nodeclub 使用forever来运行项目， 使用这类工具的好处就是， 当有代码改动过后， 会自动的重启应用。 不必每次自己去运行node *.js</li>
+</ul>
+</li>
+</ul>
+<h2 id="8-">8. 说说自己的经验</h2>
+<p>待续...</p>
+<h3 id="8-1-">8.1 消息订阅设计</h3>
+<h3 id="8-2-express-socket">8.2 express + socket</h3>
+<h3 id="8-3-">8.3 异步</h3>
+<h3 id="8-4-action">8.4 Action</h3>
+
+                </section>
+                <h4 class="ui horizontal header divider">
+                    &lt;6174/&gt;
+                </h4>
+                <div id="disqus_thread"></div>
+            </article>
+
+            <script type="text/javascript">
+                /* * * CONFIGURATION VARIABLES * * */
+                var disqus_shortname = '6174';
+                
+                /* * * DON'T EDIT BELOW THIS LINE * * */
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+            <script>
+            var _hmt = _hmt || [];
+            (function() {
+              var hm = document.createElement("script");
+              hm.src = "//hm.baidu.com/hm.js?7b14384bfb6605e915ae92e70b916417";
+              var s = document.getElementsByTagName("script")[0]; 
+              s.parentNode.insertBefore(hm, s);
+            })();
+            </script>
+
+        </div>
+
+   </div>  
+</body>
+</html>

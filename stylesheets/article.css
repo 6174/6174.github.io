@@ -1,0 +1,116 @@
+.fixcontainer {
+  width: auto;
+  padding: 20px;
+}
+article {
+  max-width: 710px;
+  margin: auto;
+  word-break: break-all;
+  word-wrap: break-word;
+}
+.post-header {
+  margin: 3.4rem 0 !important;
+  position: relative;
+}
+.post-header .post-title {
+  line-height: 1.5;
+  font-size: 36px;
+  font-weight: bolder;
+  font-family: -webkit-pictograph, serif;
+  margin-bottom: 30px;
+}
+.post-header .post-meta {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+.post-header .post-author {
+  font-weight: bold;
+  margin-right: .5rem;
+}
+.post-header .post-edit {
+  position: absolute;
+  right: 0px;
+  bottom: 3px;
+}
+.content {
+  overflow: hidden;
+}
+.post {
+  margin-top: 0;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.post:after {
+  display: none;
+}
+.post-content img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+  padding: 0.6em 0;
+}
+.post-content .full-img {
+  width: 126%;
+  max-width: none;
+  margin: 0 -13%;
+}
+.post-footer {
+  position: relative;
+  margin: 6rem 0 0;
+  padding: 6rem 0 0;
+  border-top: #ebf2f6 1px solid;
+}
+.post-footer h4 {
+  font-size: 18px;
+  font-size: 1.125rem;
+  margin: 0;
+}
+.post-footer p {
+  margin: 1rem 0;
+  font-size: 14px;
+  font-size: .875rem;
+  line-height: 1.75em;
+}
+.author-meta {
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+  font-size: .875rem;
+  line-height: 1;
+  font-style: italic;
+  color: #9eabb3;
+}
+.author-meta a {
+  color: #9eabb3;
+}
+.author-meta a:hover {
+  color: #111111;
+}
+.post-footer .author {
+  margin-right: 180px;
+}
+.post-footer h4 a {
+  text-decoration: none;
+}
+.post-footer h4 a:hover {
+  text-decoration: underline;
+}
+.post-footer .share {
+  position: absolute;
+  top: 6rem;
+  right: 0;
+  width: 140px;
+}
+.post-footer .share a {
+  font-size: 22px;
+  font-size: 1.375rem;
+  display: inline-block;
+  margin: 1rem 1.6rem 1.6rem 0;
+  color: #aaa;
+  text-decoration: none;
+}
+.post-footer .share a:hover {
+  color: #00bcd4;
+}

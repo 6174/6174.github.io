@@ -1,0 +1,25 @@
+{
+  "name": "6174-blog",
+  "version": "0.0.0",
+  "description": "6174's blabla ",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/6174/blog.git"
+  },
+  "devDependencies": {
+    "gulp": "latest",
+    "gulp-watch": "latest",
+    "gulp-less": "latest",
+    "gulp-ejs": "latest"
+  },
+  "author": "6174",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/6174/blog/issues"
+  },
+  "homepage": "https://github.com/6174/blog",
+  "dependencies": {
+    "ejs": "^2.3.1",
+    "marked": "^0.3.3"
+  }
+}

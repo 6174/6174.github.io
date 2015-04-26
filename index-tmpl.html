@@ -38,28 +38,10 @@
                 &lt;<b>6174</b>/&gt
             </a></h1>
 			<ul>
-				
-					<li><a href="http://6174.github.io/blog/articles/react-native-web-fusion.html"> React-Native 和 React-Web 融合</a></li>
+				<% list.forEach(function(it){ %>
+					<li><a href="http://6174.github.io/blog/articles/<%=it.pos%>.html"><%= it.title %></a></li>
 					
-				
-					<li><a href="http://6174.github.io/blog/articles/react-layout.html"> React-Native 布局概览</a></li>
-					
-				
-					<li><a href="http://6174.github.io/blog/articles/thinking-in-vue-two.html"> Thinking in Vue.js （二）</a></li>
-					
-				
-					<li><a href="http://6174.github.io/blog/articles/thinking-in-vue-one.html"> Thinking in vue (一)</a></li>
-					
-				
-					<li><a href="http://6174.github.io/blog/articles/next-generation-grid-system.html"> 下一代网格系统</a></li>
-					
-				
-					<li><a href="http://6174.github.io/blog/articles/logic-engine.html"> 还原计算-《逻辑的引擎》</a></li>
-					
-				
-					<li><a href="http://6174.github.io/blog/articles/nodeclub-src.html"> 通过nodeclub源码来讲解如何做一个nodejs + express + mongodb项目</a></li>
-					
-				
+				<% }) %>
 			</ul>
 		</article>
 
