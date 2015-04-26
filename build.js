@@ -1,7 +1,7 @@
 /**
  * 将markdown文件转化为html文件
  */
-var marked = require('./mark2html');
+var marked = require('./lib/mark2html');
 var ejs = require('ejs');
 var fs = require('fs-extra');
 var path = require('path');
@@ -17,7 +17,7 @@ function buildMarkdown() {
 		var type = file.split('.')[1];
 
 		var data = findArgs(fs.readFileSync(path.resolve(dir, file), 'utf-8'));
-		var tmpl = fs.readFileSync('./article-tmpl.html', 'utf-8');
+		var tmpl = fs.readFileSync('./lib/article-tmpl.html', 'utf-8');
 		var html = ejs.render(tmpl, {
 			title: data.title,
 			date: data.date,
@@ -33,7 +33,7 @@ function buildMarkdown() {
 		fs.writeFile(path.resolve('./articles', title + '.html'), html);
 	});
 
-	var tmpl = fs.readFileSync('./index-tmpl.html', 'utf-8');
+	var tmpl = fs.readFileSync('./lib/index-tmpl.html', 'utf-8');
 	var html = ejs.render(tmpl, {
 		list: sortArticleList(articleList)
 	});
