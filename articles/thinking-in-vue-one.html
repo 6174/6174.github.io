@@ -67,22 +67,22 @@
 <p><strong>效果图如下：</strong><br><img src="http://img3.tbcdn.cn/L1/461/1/6ba7c261c993ab8c859b7bac545fa94c27958d0a" alt="_2014_08_22_1_25_36"></p>
 <h3 id="-commits-">看看commits的源码：</h3>
 <p> <strong>index.html</strong>  </p>
-<pre><code class="lang-html"><span class="xml">          <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"demo"</span>&gt;</span>
-            <span class="hljs-tag">&lt;<span class="hljs-title">h1</span>&gt;</span>Latest Vue.js Commits<span class="hljs-tag">&lt;/<span class="hljs-title">h1</span>&gt;</span>
-            <span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"radio"</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"master"</span> <span class="hljs-attribute">name</span>=<span class="hljs-value">"branch"</span> <span class="hljs-attribute">v-model</span>=<span class="hljs-value">"branch"</span> <span class="hljs-attribute">value</span>=<span class="hljs-value">"master"</span>&gt;</span>
-            <span class="hljs-tag">&lt;<span class="hljs-title">label</span> <span class="hljs-attribute">for</span>=<span class="hljs-value">"master"</span>&gt;</span>master<span class="hljs-tag">&lt;/<span class="hljs-title">label</span>&gt;</span>
-            <span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"radio"</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"dev"</span> <span class="hljs-attribute">name</span>=<span class="hljs-value">"branch"</span> <span class="hljs-attribute">v-model</span>=<span class="hljs-value">"branch"</span> <span class="hljs-attribute">value</span>=<span class="hljs-value">"dev"</span>&gt;</span>
-            <span class="hljs-tag">&lt;<span class="hljs-title">label</span> <span class="hljs-attribute">for</span>=<span class="hljs-value">"dev"</span>&gt;</span>dev<span class="hljs-tag">&lt;/<span class="hljs-title">label</span>&gt;</span>
-            <span class="hljs-tag">&lt;<span class="hljs-title">br</span>&gt;</span></span><span class="hljs-expression">{{<span class="hljs-variable">branch</span>}}</span><span class="xml">
-            <span class="hljs-tag">&lt;<span class="hljs-title">ul</span>&gt;</span>
-                <span class="hljs-tag">&lt;<span class="hljs-title">li</span> <span class="hljs-attribute">v-repeat</span>=<span class="hljs-value">"commits"</span>&gt;</span>
-                    <span class="hljs-tag">&lt;<span class="hljs-title">a</span> <span class="hljs-attribute">href</span>=<span class="hljs-value">"</span></span></span><span class="hljs-expression">{{<span class="hljs-variable">html</span>_<span class="hljs-variable">url</span>}}</span><span class="xml"><span class="hljs-tag"><span class="hljs-value">"</span> <span class="hljs-attribute">target</span>=<span class="hljs-value">"_blank"</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"commit"</span>&gt;</span></span><span class="hljs-expression">{{<span class="hljs-variable">sha.slice</span>(0, 7)}}</span><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-title">a</span>&gt;</span>
-                    - <span class="hljs-tag">&lt;<span class="hljs-title">span</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"message"</span>&gt;</span></span><span class="hljs-expression">{{<span class="hljs-variable">commit.message</span> | <span class="hljs-variable">truncate</span>}}</span><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-title">span</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-title">br</span>&gt;</span>
-                    by <span class="hljs-tag">&lt;<span class="hljs-title">span</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"author"</span>&gt;</span></span><span class="hljs-expression">{{<span class="hljs-variable">commit.author.name</span>}}</span><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-title">span</span>&gt;</span>
-                    at <span class="hljs-tag">&lt;<span class="hljs-title">span</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"date"</span>&gt;</span></span><span class="hljs-expression">{{<span class="hljs-variable">commit.author.date</span> | <span class="hljs-variable">formatDate</span>}}</span><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-title">span</span>&gt;</span>
-                <span class="hljs-tag">&lt;/<span class="hljs-title">li</span>&gt;</span>
-            <span class="hljs-tag">&lt;/<span class="hljs-title">ul</span>&gt;</span>
-        <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span></span>
+<pre><code class="lang-html"><span class="xml">          <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"demo"</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Latest Vue.js Commits<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"radio"</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"master"</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"branch"</span> <span class="hljs-attr">v-model</span>=<span class="hljs-string">"branch"</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"master"</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">label</span> <span class="hljs-attr">for</span>=<span class="hljs-string">"master"</span>&gt;</span>master<span class="hljs-tag">&lt;/<span class="hljs-name">label</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"radio"</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"dev"</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"branch"</span> <span class="hljs-attr">v-model</span>=<span class="hljs-string">"branch"</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"dev"</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">label</span> <span class="hljs-attr">for</span>=<span class="hljs-string">"dev"</span>&gt;</span>dev<span class="hljs-tag">&lt;/<span class="hljs-name">label</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">br</span>&gt;</span></span><span class="hljs-template-variable">{{branch}}</span><span class="xml">
+            <span class="hljs-tag">&lt;<span class="hljs-name">ul</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">li</span> <span class="hljs-attr">v-repeat</span>=<span class="hljs-string">"commits"</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">href</span>=<span class="hljs-string">"</span></span></span><span class="hljs-template-variable">{{html_url}}</span><span class="xml"><span class="hljs-tag"><span class="hljs-string">"</span> <span class="hljs-attr">target</span>=<span class="hljs-string">"_blank"</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"commit"</span>&gt;</span></span><span class="hljs-template-variable">{{sha.slice(0, 7)}}</span><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span>
+                    - <span class="hljs-tag">&lt;<span class="hljs-name">span</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"message"</span>&gt;</span></span><span class="hljs-template-variable">{{commit.message | truncate}}</span><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">br</span>&gt;</span>
+                    by <span class="hljs-tag">&lt;<span class="hljs-name">span</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"author"</span>&gt;</span></span><span class="hljs-template-variable">{{commit.author.name}}</span><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span>
+                    at <span class="hljs-tag">&lt;<span class="hljs-name">span</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"date"</span>&gt;</span></span><span class="hljs-template-variable">{{commit.author.date | formatDate}}</span><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
 </code></pre>
 <p><strong>app.js</strong> </p>
 <pre><code class="lang-javascript">     <span class="hljs-comment">/**
@@ -103,33 +103,33 @@
         <span class="hljs-comment">/**
          * vm创建成功的回调
          */</span>
-        created: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+        created: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
             <span class="hljs-comment">/**
              * $watch可以关注branch属性的变动
              * branch 一变动就去获取当前branch的commits数据
              */</span>
-            <span class="hljs-keyword">this</span>.$watch(‘branch’, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+            <span class="hljs-keyword">this</span>.$watch(‘branch’, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
                 <span class="hljs-keyword">this</span>.fetchData()
             })
         },
         <span class="hljs-comment">// 过滤器先掠过</span>
         filters: {
-            truncate: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(v)</span> </span>{
+            truncate: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">v</span>) </span>{
                 <span class="hljs-keyword">var</span> newline = v.indexOf(‘\n’)
                 <span class="hljs-keyword">return</span> newline &gt; <span class="hljs-number">0</span> ? v.slice(<span class="hljs-number">0</span>, newline) : v
             },
-            formatDate: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(v)</span> </span>{
+            formatDate: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">v</span>) </span>{
                 <span class="hljs-keyword">return</span> v.replace(<span class="hljs-regexp">/T|Z/g</span>, ‘‘)
             }
         },
         <span class="hljs-comment">// vm对象的实例方法</span>
         methods: {
             <span class="hljs-comment">// 刚在调用的fetchData方法就定义在这里</span>
-            fetchData: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+            fetchData: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
                 <span class="hljs-keyword">var</span> xhr = <span class="hljs-keyword">new</span> XMLHttpRequest(),
                     self = <span class="hljs-keyword">this</span>;
                 xhr.open(‘GET’, <span class="hljs-string">'https: //api.github.com/repos/yyx990803/vue/commits?per_page=3&amp;sha='</span> + self.branch)
-                xhr.onload = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+                xhr.onload = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
                     self.commits = <span class="hljs-built_in">JSON</span>.parse(xhr.responseText)
                 }
                 xhr.send()

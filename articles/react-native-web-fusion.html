@@ -69,7 +69,7 @@
 </ol>
 <h3 id="-web-native">问题一 ： 如何区分web和native</h3>
 <p>react-native 里边会有window变量吗？我试了一下，是有的，那window变量里边不可能有location，document之类的吧， 借着这种想法，可用如下方法来区分native和web</p>
-<pre><code class="lang-javascript"> <span class="hljs-reserved">var</span> isNative = !<span class="hljs-built_in">window</span>.location;
+<pre><code class="lang-javascript"> <span class="hljs-keyword">var</span> isNative = !<span class="hljs-built_in">window</span>.location;
 </code></pre>
 <h3 id="-">问题二：如何对应不同平台打包</h3>
 <p>对于react-native，是通过packager来打包的，具体的实现和逻辑可以随时查看packager的readme文档。 那我们怎么将适用于native的代码打包成web的代码，首先想到的是<code>browserify</code>, <code>webpack</code>。 都是遵循commonJs规范，个人更喜欢前者， 用它来应该足以满足需求。  </p>
@@ -78,16 +78,16 @@
 <h3 id="-">问题四：代码结构应该是怎样的</h3>
 <p>web和native的代码都写在同一个地方，如何做区分呢？ 这个问题当然最好就是不做区分，或者就像女生的衣服，期望是越少越好，但永远不可能木有（猥琐了：-】）。  </p>
 <p>我设想中的一个最简模型的目录结构，web和ios有不同的入口，web和ios有单独的目录， 组件共享， 如下：</p>
-<pre><code>├── compo<span class="hljs-class">.js</span>            <span class="hljs-comment">// 我们会使用到得公共组件</span>
-├── styles<span class="hljs-class">.css</span>          <span class="hljs-comment">// compo的样式文件</span>
-├── index<span class="hljs-class">.web</span><span class="hljs-class">.js</span>        <span class="hljs-comment">// web 入口</span>
-├── index<span class="hljs-class">.ios</span><span class="hljs-class">.js</span>        <span class="hljs-comment">// ios 入口</span>
-├── shared<span class="hljs-class">.js</span>           <span class="hljs-comment">// 做兼容的共享变量文件</span>
+<pre><code>├── compo<span class="hljs-selector-class">.js</span>            <span class="hljs-comment">// 我们会使用到得公共组件</span>
+├── styles<span class="hljs-selector-class">.css</span>          <span class="hljs-comment">// compo的样式文件</span>
+├── index<span class="hljs-selector-class">.web</span><span class="hljs-selector-class">.js</span>        <span class="hljs-comment">// web 入口</span>
+├── index<span class="hljs-selector-class">.ios</span><span class="hljs-selector-class">.js</span>        <span class="hljs-comment">// ios 入口</span>
+├── shared<span class="hljs-selector-class">.js</span>           <span class="hljs-comment">// 做兼容的共享变量文件</span>
 ├── ios                 <span class="hljs-comment">// ios 目录</span>
 └── web                 <span class="hljs-comment">// web 目录</span>
-    ├── index<span class="hljs-class">.html</span>      <span class="hljs-comment">// web 页面</span>
-    ├── index<span class="hljs-class">.web</span><span class="hljs-class">.js</span>    <span class="hljs-comment">// 打包过后的js</span>
-    └── react<span class="hljs-class">.js</span>        <span class="hljs-comment">// react.js依赖</span>
+    ├── index<span class="hljs-selector-class">.html</span>      <span class="hljs-comment">// web 页面</span>
+    ├── index<span class="hljs-selector-class">.web</span><span class="hljs-selector-class">.js</span>    <span class="hljs-comment">// 打包过后的js</span>
+    └── react<span class="hljs-selector-class">.js</span>        <span class="hljs-comment">// react.js依赖</span>
 </code></pre><p>好像很复杂的样子， 其实相对于原本的SampleApp，只是多了<code>index.web.js</code> , <code>web目录</code>, <code>shared</code>三者。 然后style通过style.css来描述。 </p>
 <h2 id="-">具体实现</h2>
 <p>我们已经整理了具体的实现思路，下面是我就会直接吐出我的实现代码， 重点的地方都会在源码里边有注释 </p>
@@ -97,7 +97,7 @@
      * Sample React Native App
      * https://github.com/facebook/react-native
      */</span>
-<span class="hljs-pi">    'use strict'</span>;
+<span class="hljs-meta">    'use strict'</span>;
     <span class="hljs-keyword">var</span> React = <span class="hljs-built_in">require</span>(<span class="hljs-string">'react-native'</span>);
     <span class="hljs-keyword">var</span> Compo = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./compo'</span>);
     React.AppRegistry.registerComponent(<span class="hljs-string">'ShareCodeProject'</span>, () =&gt;  Compo);
@@ -147,38 +147,38 @@
      * 大家可能发现了css的写法还是小驼峰，是的不是横杠，暂时我们还是以这种方式处理
      * native-css 目测不支持横杠，（自己重写native-css相对来说是比较容易的，完全可以做到css兼容到react-native的css子集）
      */</span>
-    <span class="hljs-class">.container</span> <span class="hljs-rules">{
-        <span class="hljs-rule"><span class="hljs-attribute">flex</span>:<span class="hljs-value"> <span class="hljs-number">1</span></span></span>;
-        <span class="hljs-rule"><span class="hljs-attribute">justifyContent</span>:<span class="hljs-value"> center</span></span>;
-        <span class="hljs-rule"><span class="hljs-attribute">alignItems</span>:<span class="hljs-value"> center</span></span>;
-        <span class="hljs-rule"><span class="hljs-attribute">backgroundColor</span>:<span class="hljs-value"> <span class="hljs-hexcolor">#F5FCFF</span></span></span>;
-    }</span>
+    <span class="hljs-selector-class">.container</span> {
+        <span class="hljs-attribute">flex</span>: <span class="hljs-number">1</span>;
+        <span class="hljs-attribute">justifyContent</span>: center;
+        <span class="hljs-attribute">alignItems</span>: center;
+        <span class="hljs-attribute">backgroundColor</span>: <span class="hljs-number">#F5FCFF</span>;
+    }
 
-    <span class="hljs-class">.welcome</span> <span class="hljs-rules">{
-        <span class="hljs-rule"><span class="hljs-attribute">fontSize</span>:<span class="hljs-value"> <span class="hljs-number">20</span></span></span>;
-        <span class="hljs-rule"><span class="hljs-attribute">textAlign</span>:<span class="hljs-value"> center</span></span>;
-        <span class="hljs-rule"><span class="hljs-attribute">margin</span>:<span class="hljs-value"> <span class="hljs-number">10</span></span></span>;
-    }</span>
+    <span class="hljs-selector-class">.welcome</span> {
+        <span class="hljs-attribute">fontSize</span>: <span class="hljs-number">20</span>;
+        <span class="hljs-attribute">textAlign</span>: center;
+        <span class="hljs-attribute">margin</span>: <span class="hljs-number">10</span>;
+    }
 
-    <span class="hljs-class">.instructions</span> <span class="hljs-rules">{
-        <span class="hljs-rule"><span class="hljs-attribute">textAlign</span>:<span class="hljs-value"> center</span></span>;
-        <span class="hljs-rule"><span class="hljs-attribute">color</span>:<span class="hljs-value"> <span class="hljs-hexcolor">#333333</span></span></span>;
-        <span class="hljs-rule"><span class="hljs-attribute">marginBottom</span>:<span class="hljs-value"> <span class="hljs-number">5</span></span></span>;
-    }</span>
+    <span class="hljs-selector-class">.instructions</span> {
+        <span class="hljs-attribute">textAlign</span>: center;
+        <span class="hljs-attribute">color</span>: <span class="hljs-number">#333333</span>;
+        <span class="hljs-attribute">marginBottom</span>: <span class="hljs-number">5</span>;
+    }
 </code></pre>
 <p><strong>index.html</strong></p>
-<pre><code class="lang-html">    <span class="hljs-doctype">&lt;!DOCTYPE html&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-title">html</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-title">head</span>&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-title">title</span>&gt;</span>Hello React!<span class="hljs-tag">&lt;/<span class="hljs-title">title</span>&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-title">script</span> <span class="hljs-attribute">src</span>=<span class="hljs-value">"./react.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span>
+<pre><code class="lang-html">    <span class="hljs-meta">&lt;!DOCTYPE html&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>Hello React!<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"./react.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
         <span class="hljs-comment">&lt;!-- No need for JSXTransformer! --&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-title">head</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-title">body</span>&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"App"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-title">script</span> <span class="hljs-attribute">src</span>=<span class="hljs-value">"./index.web.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-title">body</span>&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-title">html</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"App"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"./index.web.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span>
 </code></pre>
 <h4 id="share-">Share部分的处理</h4>
 <p><strong>shared.js</strong></p>
@@ -226,62 +226,62 @@
     module.exports = Share;
 </code></pre>
 <h4 id="build-">build打包程序</h4>
-<pre><code class="lang-javascript">    <span class="hljs-keyword">var</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);
-    <span class="hljs-keyword">var</span> nativeCSS = <span class="hljs-built_in">require</span>(<span class="hljs-string">'native-css'</span>),
-    <span class="hljs-keyword">var</span> cssObject = nativeCSS.convert(<span class="hljs-string">'./styles.css'</span>);
+<pre><code class="lang-javascript">    var fs = require(<span class="hljs-string">'fs'</span>)<span class="hljs-comment">;</span>
+    var nativeCSS = require(<span class="hljs-string">'native-css'</span>),
+    var cssObject = nativeCSS.convert(<span class="hljs-string">'./styles.css'</span>)<span class="hljs-comment">;</span>
 
-    toStyleJs(cssObject, <span class="hljs-string">'./styles.js'</span>);
-    buildWebReact();
+    toStyleJs(cssObject, <span class="hljs-string">'./styles.js'</span>)<span class="hljs-comment">;</span>
+    buildWebReact()<span class="hljs-comment">;</span>
 
     <span class="hljs-comment">/**
      * native-css获取到得是一个对象，需要将cssObject转化为js代码
      */</span>
-    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">toStyleJs</span><span class="hljs-params">(cssObject, name)</span> </span>{
-        <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'build styles.js \n'</span>);
-        <span class="hljs-keyword">var</span> tab = <span class="hljs-string">'    '</span>;
-        <span class="hljs-keyword">var</span> str = <span class="hljs-string">''</span>;
+    function toStyleJs(cssObject, name) {
+        console.log(<span class="hljs-string">'build styles.js \n'</span>)<span class="hljs-comment">;</span>
+        var tab = <span class="hljs-string">'    '</span><span class="hljs-comment">;</span>
+        var <span class="hljs-keyword">str</span> = <span class="hljs-string">''</span><span class="hljs-comment">;</span>
 
-        str += <span class="hljs-string">'/* build header */\n'</span>;
-        str += <span class="hljs-string">'var styles = {\n'</span>;
+        <span class="hljs-keyword">str</span> += <span class="hljs-string">'/* build header */\n'</span><span class="hljs-comment">;</span>
+        <span class="hljs-keyword">str</span> += <span class="hljs-string">'var styles = {\n'</span><span class="hljs-comment">;</span>
 
-        <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> key <span class="hljs-keyword">in</span> cssObject) {
-            <span class="hljs-keyword">var</span> rules = cssObject[key];
-            str += tab + key + <span class="hljs-string">': {\n'</span>;
-            <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> attr <span class="hljs-keyword">in</span> rules) {
-                <span class="hljs-keyword">var</span> rule = rules[attr];
-                str += tab + tab + attr + <span class="hljs-string">': '</span> + format(rule) + <span class="hljs-string">',\n'</span>
+        <span class="hljs-keyword">for</span>(var key in cssObject) {
+            var rules = cssObject[key]<span class="hljs-comment">;</span>
+            <span class="hljs-keyword">str</span> += tab + key + <span class="hljs-string">': {\n'</span><span class="hljs-comment">;</span>
+            <span class="hljs-keyword">for</span>(var attr in rules) {
+                var rule = rules[attr]<span class="hljs-comment">;</span>
+                <span class="hljs-keyword">str</span> += tab + tab + attr + <span class="hljs-string">': '</span> + format(rule) + <span class="hljs-string">',\n'</span>
             }
-            str += tab + <span class="hljs-string">'},\n'</span> 
+            <span class="hljs-keyword">str</span> += tab + <span class="hljs-string">'},\n'</span> 
         }
 
-        str += <span class="hljs-string">'};\n'</span>
-        str += <span class="hljs-string">'module.exports = styles;\n'</span>
+        <span class="hljs-keyword">str</span> += <span class="hljs-string">'};\n'</span>
+        <span class="hljs-keyword">str</span> += <span class="hljs-string">'module.exports = styles;\n'</span>
 
-        fs.writeFile(name, str)
-        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">format</span><span class="hljs-params">(rule)</span> </span>{
-            <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">isNaN</span>(rule - <span class="hljs-number">0</span>)) {
-                <span class="hljs-keyword">return</span> rule;
+        fs.writeFile(name, <span class="hljs-keyword">str</span>)
+        function format(rule) {
+            <span class="hljs-keyword">if</span> (!isNaN(rule - <span class="hljs-number">0</span>)) {
+                <span class="hljs-keyword">return</span> rule<span class="hljs-comment">;</span>
             }
-            <span class="hljs-keyword">return</span> <span class="hljs-string">'"'</span> + rule + <span class="hljs-string">'"'</span>;
+            <span class="hljs-keyword">return</span> <span class="hljs-string">'"'</span> + rule + <span class="hljs-string">'"'</span><span class="hljs-comment">;</span>
         }
     }
 
     <span class="hljs-comment">/**
      * 构造web使用的react
      */</span>
-    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">buildWebReact</span><span class="hljs-params">()</span> </span>{
-        <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'build web bundle'</span>);
-        <span class="hljs-keyword">var</span> browserify = <span class="hljs-built_in">require</span>(<span class="hljs-string">'browserify'</span>);
-        <span class="hljs-keyword">var</span> b = browserify();
-        b.add(<span class="hljs-string">'./index.web.js'</span>);
+    function buildWebReact() {
+        console.log(<span class="hljs-string">'build web bundle'</span>)<span class="hljs-comment">;</span>
+        var browserify = require(<span class="hljs-string">'browserify'</span>)<span class="hljs-comment">;</span>
+        var b = browserify()<span class="hljs-comment">;</span>
+        b.add(<span class="hljs-string">'./index.web.js'</span>)<span class="hljs-comment">;</span>
 
         <span class="hljs-comment">// 添加es6支持</span>
-        b.transform(<span class="hljs-string">'reactify'</span>, {<span class="hljs-string">'es6'</span>: <span class="hljs-literal">true</span>});
+        b.transform(<span class="hljs-string">'reactify'</span>, {<span class="hljs-string">'es6'</span>: true})<span class="hljs-comment">;</span>
 
         <span class="hljs-comment">// ignore掉react-native </span>
         b.ignore(<span class="hljs-string">'react-native'</span>)
-        <span class="hljs-keyword">var</span> wstream = fs.createWriteStream(<span class="hljs-string">'./web/index.web.js'</span>);
-        b.bundle().pipe(wstream);
+        var wstream = fs.createWriteStream(<span class="hljs-string">'./web/index.web.js'</span>)<span class="hljs-comment">;</span>
+        b.bundle().pipe(wstream)<span class="hljs-comment">;</span>
     }
 </code></pre>
 <h2 id="-react-native-react-web-">也尝试一下由react-native 到react-web的兼容方案</h2>
@@ -293,9 +293,9 @@
 <h3 id="-">解决方案</h3>
 <h3 id="1-nested-style-">1. nested 的style写法</h3>
 <pre><code class="lang-javascript">    styles = StyleSheet.create({
-        <span class="hljs-keyword">mod</span>: {
-            flexDirection: 'row',
-            <span class="hljs-property">item</span>: {
+        mod: {
+            flexDirection: <span class="hljs-string">'row'</span>,
+            item: {
                 flex: <span class="hljs-number">1</span>
             }
         }
@@ -304,12 +304,12 @@
 <p>这样的写法有些像less，我们可以知道元素的层级关系， 这样我可以遍历这个对象，查找子元素有设置flex的，父元素加上<code>display:flexbox</code>。 </p>
 <h3 id="2-">2. 通过自定义元素</h3>
 <pre><code class="lang-javascript"> var GridSystem = require(<span class="hljs-string">'GridSystem'</span>);
- var <span class="hljs-list">{
+ var {
     Row,
     Grid,
     Grid6,
     Grid4
- }</span> = GridSystem;
+ } = GridSystem;
  &lt;<span class="hljs-keyword">Row</span> ...&gt;
     &lt;<span class="hljs-keyword">Grid</span>/&gt;
     &lt;<span class="hljs-keyword">Grid</span>/&gt;
@@ -318,75 +318,75 @@
 <p>通过标签的方式， 相当于给react-native或者react添加了一个网格系统，同时我们可以直接在Row上设置<code>display:flex</code>.</p>
 <h3 id="3-">3. 遍历查找</h3>
 <p>完全同react-native原生的写法，直接在web中兼容，遍历所有有flex样式的节点，直接做兼容。</p>
-<pre><code class="lang-javascript">    componentDidMount: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
-        <span class="hljs-keyword">var</span> <span class="hljs-variable">$node</span> = this.getDOMNode();
-        <span class="hljs-keyword">var</span> <span class="hljs-variable">$parent</span> = <span class="hljs-variable">$node</span>.parentNode;
-        <span class="hljs-keyword">var</span> <span class="hljs-variable">$docfrag</span> = document.createDocumentFragment();
-        <span class="hljs-variable">$docfrag</span>.appendChild(<span class="hljs-variable">$node</span>);
+<pre><code class="lang-javascript">    componentDidMount: function() {
+        var $<span class="hljs-keyword">node</span> <span class="hljs-title">= this</span>.getDOMNode();
+        var $parent = $<span class="hljs-keyword">node</span>.<span class="hljs-title">parentNode</span>;
+        var $docfrag = document.createDocumentFragment();
+        $docfrag.appendChild($<span class="hljs-keyword">node</span><span class="hljs-title">);
 
-        <span class="hljs-keyword">var</span> treeWalker = document.createTreeWalker(<span class="hljs-variable">$node</span>, NodeFilter.SHOW_ELEMENT, { 
-            acceptNode: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(node)</span> </span>{ 
-                <span class="hljs-keyword">return</span> NodeFilter.FILTER_ACCEPT; 
+        var</span> treeWalker = document.createTreeWalker($<span class="hljs-keyword">node</span><span class="hljs-title">, NodeFilter</span>.SHOW_ELEMENT, { 
+            acceptNode: function(<span class="hljs-keyword">node</span><span class="hljs-title">) { 
+                return</span> NodeFilter.FILTER_ACCEPT; 
             } 
-        }, <span class="hljs-keyword">false</span>);
+        }, <span class="hljs-literal">false</span>);
 
-        <span class="hljs-keyword">while</span>(treeWalker.nextNode()) {
-            <span class="hljs-keyword">var</span> node = treeWalker.currentNode;
-            <span class="hljs-keyword">if</span> (node.style.flex) {
-                flexChild(node);
-                flexParent(node.parentNode);
+        while(treeWalker.nextNode()) {
+            var <span class="hljs-keyword">node</span> <span class="hljs-title">= treeWalker</span>.currentNode;
+            if (<span class="hljs-keyword">node</span>.<span class="hljs-title">style</span>.flex) {
+                flexChild(<span class="hljs-keyword">node</span><span class="hljs-title">);
+                flexParent</span>(<span class="hljs-keyword">node</span>.<span class="hljs-title">parentNode</span>);
             }
         };
 
-        <span class="hljs-variable">$parent</span>.appendChild(<span class="hljs-variable">$docfrag</span>);
+        $parent.appendChild($docfrag);
     }
 
-    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">flexChild</span><span class="hljs-params">(node)</span> </span>{
-        <span class="hljs-keyword">if</span> (node.__flexchild__) {
-            <span class="hljs-keyword">return</span>;
+    function flexChild(<span class="hljs-keyword">node</span><span class="hljs-title">) {
+        if</span> (<span class="hljs-keyword">node</span>.<span class="hljs-title">__flexchild__</span>) {
+            return;
         }
-        node.__flexchild__ = <span class="hljs-keyword">true</span>;
-        <span class="hljs-keyword">var</span> flexGrow = node.style.flexGrow;
-        addStyle(node, `
-            -webkit-box-flex: ${flexGrow};
+        <span class="hljs-keyword">node</span>.<span class="hljs-title">__flexchild__</span> = <span class="hljs-literal">true</span>;
+        var flexGrow = <span class="hljs-keyword">node</span>.<span class="hljs-title">style</span>.flexGrow;
+        addStyle(<span class="hljs-keyword">node</span><span class="hljs-title">, `
+            -webkit-box-flex</span>: ${flexGrow};
             -webkit-flex: ${flexGrow};
             -ms-flex: ${flexGrow};
             flex: ${flexGrow};
         `);
-        node.classList.add(<span class="hljs-string">'mui-flex-cell'</span>);
+        <span class="hljs-keyword">node</span>.<span class="hljs-title">classList</span>.add('mui-flex-cell');
     }
 
-    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">flexParent</span><span class="hljs-params">(node)</span> </span>{
-        <span class="hljs-keyword">if</span> (node.__flexparentd__) {
-            <span class="hljs-keyword">return</span>;
+    function flexParent(<span class="hljs-keyword">node</span><span class="hljs-title">) {
+        if</span> (<span class="hljs-keyword">node</span>.<span class="hljs-title">__flexparentd__</span>) {
+            return;
         }
-        node.__flexparentd__ = <span class="hljs-keyword">true</span>;
-        node.classList.add(<span class="hljs-string">'mui-flex'</span>);
+        <span class="hljs-keyword">node</span>.<span class="hljs-title">__flexparentd__</span> = <span class="hljs-literal">true</span>;
+        <span class="hljs-keyword">node</span>.<span class="hljs-title">classList</span>.add('mui-flex');
     }
 </code></pre>
-<pre><code class="lang-css">    <span class="hljs-class">.mui-flex</span> <span class="hljs-rules">{
-        <span class="hljs-rule"><span class="hljs-attribute">display</span>:<span class="hljs-value"> -webkit-box<span class="hljs-important">!important</span></span></span>;
-        <span class="hljs-rule"><span class="hljs-attribute">display</span>:<span class="hljs-value"> -webkit-flex<span class="hljs-important">!important</span></span></span>;
-        <span class="hljs-rule"><span class="hljs-attribute">display</span>:<span class="hljs-value"> -ms-flexbox<span class="hljs-important">!important</span></span></span>;
-        <span class="hljs-rule"><span class="hljs-attribute">display</span>:<span class="hljs-value"> flex<span class="hljs-important">!important</span></span></span>;
-        <span class="hljs-rule"><span class="hljs-attribute">-webkit-flex-wrap</span>:<span class="hljs-value"> wrap</span></span>;
-        <span class="hljs-rule"><span class="hljs-attribute">-ms-flex-wrap</span>:<span class="hljs-value"> wrap</span></span>;
-        <span class="hljs-rule"><span class="hljs-attribute">flex-wrap</span>:<span class="hljs-value"> wrap</span></span>;
-        <span class="hljs-rule"><span class="hljs-attribute">-webkit-box-orient</span>:<span class="hljs-value"> vertical</span></span>;
-        <span class="hljs-rule"><span class="hljs-attribute">-webkit-box-direction</span>:<span class="hljs-value"> normal</span></span>;
-        <span class="hljs-rule"><span class="hljs-attribute">-webkit-flex-direction</span>:<span class="hljs-value"> column</span></span>;
-        <span class="hljs-rule"><span class="hljs-attribute">-ms-flex-direction</span>:<span class="hljs-value"> column</span></span>;
-        <span class="hljs-rule"><span class="hljs-attribute">flex-direction</span>:<span class="hljs-value"> column</span></span>;
-    }</span>
+<pre><code class="lang-css">    <span class="hljs-selector-class">.mui-flex</span> {
+        <span class="hljs-attribute">display</span>: -webkit-box<span class="hljs-meta">!important</span>;
+        <span class="hljs-attribute">display</span>: -webkit-flex<span class="hljs-meta">!important</span>;
+        <span class="hljs-attribute">display</span>: -ms-flexbox<span class="hljs-meta">!important</span>;
+        <span class="hljs-attribute">display</span>: flex<span class="hljs-meta">!important</span>;
+        <span class="hljs-attribute">-webkit-flex-wrap</span>: wrap;
+        <span class="hljs-attribute">-ms-flex-wrap</span>: wrap;
+        <span class="hljs-attribute">flex-wrap</span>: wrap;
+        <span class="hljs-attribute">-webkit-box-orient</span>: vertical;
+        <span class="hljs-attribute">-webkit-box-direction</span>: normal;
+        <span class="hljs-attribute">-webkit-flex-direction</span>: column;
+        <span class="hljs-attribute">-ms-flex-direction</span>: column;
+        <span class="hljs-attribute">flex-direction</span>: column;
+    }
 
-    <span class="hljs-class">.mui-flex-cell</span> <span class="hljs-rules">{
-        <span class="hljs-rule"><span class="hljs-attribute">-webkit-flex-basis</span>:<span class="hljs-value"> <span class="hljs-number">0</span></span></span>;
-        <span class="hljs-rule"><span class="hljs-attribute">-ms-flex-preferred-size</span>:<span class="hljs-value"> <span class="hljs-number">0</span></span></span>;
-        <span class="hljs-rule"><span class="hljs-attribute">flex-basis</span>:<span class="hljs-value"> <span class="hljs-number">0</span></span></span>;
-        <span class="hljs-rule"><span class="hljs-attribute">max-width</span>:<span class="hljs-value"> <span class="hljs-number">100%</span></span></span>;
-        <span class="hljs-rule"><span class="hljs-attribute">display</span>:<span class="hljs-value"> block</span></span>;
-        <span class="hljs-rule"><span class="hljs-attribute">position</span>:<span class="hljs-value"> relative</span></span>;
-    }</span>
+    <span class="hljs-selector-class">.mui-flex-cell</span> {
+        <span class="hljs-attribute">-webkit-flex-basis</span>: <span class="hljs-number">0</span>;
+        <span class="hljs-attribute">-ms-flex-preferred-size</span>: <span class="hljs-number">0</span>;
+        <span class="hljs-attribute">flex-basis</span>: <span class="hljs-number">0</span>;
+        <span class="hljs-attribute">max-width</span>: <span class="hljs-number">100%</span>;
+        <span class="hljs-attribute">display</span>: block;
+        <span class="hljs-attribute">position</span>: relative;
+    }
 </code></pre>
 <h2 id="-">总结</h2>
 <p>这个demo很简单，实际应用中应该会有很多地方的坑， 比如：</p>

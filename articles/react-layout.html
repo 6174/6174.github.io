@@ -32,24 +32,24 @@
 <p>不知道是官网文档不全还是我眼瞎，反正是没找到，那做一个实验自己找吧：</p>
 <pre><code class="lang-javascript">    var Dimensions = require(<span class="hljs-string">'Dimensions'</span>);
     &lt;Text style={styles.welcome}&gt;
-          window.<span class="hljs-variable">width</span>={Dimensions.<span class="hljs-built_in">get</span>(<span class="hljs-string">'window'</span>).<span class="hljs-variable">width</span> + <span class="hljs-string">'\n'</span>} 
-          window.<span class="hljs-variable">height</span>={Dimensions.<span class="hljs-built_in">get</span>(<span class="hljs-string">'window'</span>).<span class="hljs-variable">height</span> + <span class="hljs-string">'\n'</span>} 
+          window.<span class="hljs-built_in">width</span>={Dimensions.<span class="hljs-built_in">get</span>(<span class="hljs-string">'window'</span>).<span class="hljs-built_in">width</span> + <span class="hljs-string">'\n'</span>} 
+          window.<span class="hljs-built_in">height</span>={Dimensions.<span class="hljs-built_in">get</span>(<span class="hljs-string">'window'</span>).<span class="hljs-built_in">height</span> + <span class="hljs-string">'\n'</span>} 
           pxielRatio={PixelRatio.<span class="hljs-built_in">get</span>()}
     &lt;/Text&gt;
 </code></pre>
 <p>默认用的是ihone6的模拟器结果是：</p>
-<pre><code class="lang-javascript">    <span class="hljs-built_in">window</span>.width=<span class="hljs-number">375</span>
-    <span class="hljs-built_in">window</span>.height=<span class="hljs-number">667</span>
+<pre><code class="lang-javascript">    window.<span class="hljs-built_in">width</span>=<span class="hljs-number">375</span>
+    window.<span class="hljs-built_in">height</span>=<span class="hljs-number">667</span>
 </code></pre>
 <p>我们知道iphone系列的尺寸如下图：</p>
 <p><img src="http://gtms04.alicdn.com/tps/i4/TB1tOgMHpXXXXaIXFXXWb19GXXX-911-563.jpg" alt="iphones"> </p>
 <p>可以看到iphone 6的宽度为 375pt，对应了上边的375，由此可见react的单位为pt。 那如何获取实际的像素尺寸呢？ 这对图片的高清化很重要，如果我的图片大小为100<em>100 px. 设置宽度为100 </em> 100. 那在iphone上的尺寸就是模糊的。 这个时候需要的图像大小应该是 100 * pixelRatio的大小 。 </p>
 <p>react 提供了PixelRatio 的获取方式<a href="https://facebook.github.io/react-native/docs/pixelratio.html">https://facebook.github.io/react-native/docs/pixelratio.html</a> </p>
-<pre><code class="lang-javascript"> var <span class="hljs-built_in">image</span> = getImage({
-   <span class="hljs-variable">width</span>: <span class="hljs-number">200</span> * PixelRatio.<span class="hljs-built_in">get</span>(),
-   <span class="hljs-variable">height</span>: <span class="hljs-number">100</span> * PixelRatio.<span class="hljs-built_in">get</span>()
+<pre><code class="lang-javascript"> var image = getImage({
+   <span class="hljs-symbol">width:</span> <span class="hljs-number">200</span> * PixelRatio.get(),
+   <span class="hljs-symbol">height:</span> <span class="hljs-number">100</span> * PixelRatio.get()
  });
- &lt;Image source={<span class="hljs-built_in">image</span>} style={{<span class="hljs-variable">width</span>: <span class="hljs-number">200</span>, <span class="hljs-variable">height</span>: <span class="hljs-number">100</span>}} /&gt;
+ &lt;Image source={image} style=<span class="hljs-template-variable">{{<span class="hljs-symbol">width:</span> <span class="hljs-number">200</span>, <span class="hljs-symbol">height:</span> <span class="hljs-number">100</span>}}</span> /&gt;
 </code></pre>
 <h2 id="flex-">flex的布局</h2>
 <h3 id="-">默认宽度</h3>
@@ -59,200 +59,200 @@
 <li>固定宽度的元素上设置一个View， 不设置宽度</li>
 <li>flex的元素上放一个View宽度， 不设置宽度 </li>
 </ol>
-<pre><code class="lang-html"><span class="xml"> <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{[styles.text,</span> <span class="hljs-attribute">styles.header</span>]}&gt;</span>
+<pre><code class="lang-html"> &lt;Text style={[styles.text, styles.header]}&gt;
       根节点上放一个元素，不设置宽度
-  <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>        
+  &lt;<span class="hljs-regexp">/Text&gt;        
 
-  <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">height</span>: 20, <span class="hljs-variable">backgroundColor</span>: '#333333'}}</span><span class="xml"><span class="hljs-tag"> /&gt;</span>
+  &lt;View style={{height: 20, backgroundColor: '#333333'}} /</span>&gt;
 
-  <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{[styles.text,</span> <span class="hljs-attribute">styles.header</span>]}&gt;</span>
+  &lt;Text style={[styles.text, styles.header]}&gt;
       固定宽度的元素上放一个View，不设置宽度
-  <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span> 
+  &lt;<span class="hljs-regexp">/Text&gt; 
 
-  <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">width</span>: 100}}</span><span class="xml"><span class="hljs-tag">&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">height</span>: 20, <span class="hljs-variable">backgroundColor</span>: '#333333'}}</span><span class="xml"><span class="hljs-tag"> /&gt;</span>
-  <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
+  &lt;View style={{width: 100}}&gt;
+    &lt;View style={{height: 20, backgroundColor: '#333333'}} /</span>&gt;
+  &lt;<span class="hljs-regexp">/View&gt;
 
-  <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{[styles.text,</span> <span class="hljs-attribute">styles.header</span>]}&gt;</span>
+  &lt;Text style={[styles.text, styles.header]}&gt;
       flex的元素上放一个View，不设置宽度
-  <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span> 
+  &lt;/</span>Text&gt; 
 
-  <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flexDirection</span>: '<span class="hljs-variable">row</span>'}}</span><span class="xml"><span class="hljs-tag">&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flex</span>: 1}}</span><span class="xml"><span class="hljs-tag">&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">height</span>: 20, <span class="hljs-variable">backgroundColor</span>: '#333333'}}</span><span class="xml"><span class="hljs-tag"> /&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flex</span>: 1}}</span><span class="xml"><span class="hljs-tag">/&gt;</span>
-  <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span></span>
+  &lt;View style=<span class="hljs-template-variable">{{<span class="hljs-symbol">flexDirection:</span> <span class="hljs-string">'row'</span>}}</span>&gt;
+    &lt;View style=<span class="hljs-template-variable">{{<span class="hljs-symbol">flex:</span> <span class="hljs-number">1</span>}}</span>&gt;
+      &lt;View style=<span class="hljs-template-variable">{{<span class="hljs-symbol">height:</span> <span class="hljs-number">20</span>, <span class="hljs-symbol">backgroundColor:</span> <span class="hljs-string">'#333333'</span>}}</span> /&gt;
+    &lt;<span class="hljs-regexp">/View&gt;
+    &lt;View style={{flex: 1}}/</span>&gt;
+  &lt;<span class="hljs-regexp">/View&gt;</span>
 </code></pre>
 <p><img src="http://gtms01.alicdn.com/tps/i1/TB1KJoMHpXXXXcKXVXXKEpZRFXX-376-206.png" alt=""></p>
 <p>结果可以看到flex的元素如果不设置宽度， 都会百分之百的占满父容器。</p>
 <h3 id="-">水平垂直居中</h3>
 <p>css 里边经常会做的事情是去讲一个文本或者图片水平垂直居中，如果使用过css 的flexbox当然知道使用<code>alignItems</code> 和 <code>justifyContent</code> . 那用react-native也来做一下实验 </p>
-<pre><code class="lang-html"><span class="xml">   <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{[styles.text,</span> <span class="hljs-attribute">styles.header</span>]}&gt;</span>
+<pre><code class="lang-html">   &lt;Text style={[styles.text, styles.header]}&gt;
         水平居中
-    <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
+    &lt;<span class="hljs-regexp">/Text&gt;
 
-    <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">height</span>: 100, <span class="hljs-variable">backgroundColor</span>: '#333333', <span class="hljs-variable">alignItems</span>: '<span class="hljs-variable">center</span>'}}</span><span class="xml"><span class="hljs-tag">&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">backgroundColor</span>: '<span class="hljs-begin-block">#fefefe</span>', <span class="hljs-variable">width</span>: 30, <span class="hljs-variable">height</span>: 30, <span class="hljs-variable">borderRadius</span>: 15}}</span><span class="xml"><span class="hljs-tag">/&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
+    &lt;View style={{height: 100, backgroundColor: '#333333', alignItems: 'center'}}&gt;
+      &lt;View style={{backgroundColor: '#fefefe', width: 30, height: 30, borderRadius: 15}}/</span>&gt;
+    &lt;<span class="hljs-regexp">/View&gt;
 
-     <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{[styles.text,</span> <span class="hljs-attribute">styles.header</span>]}&gt;</span>
+     &lt;Text style={[styles.text, styles.header]}&gt;
         垂直居中
-    <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">height</span>: 100, <span class="hljs-variable">backgroundColor</span>: '#333333', <span class="hljs-variable">justifyContent</span>: '<span class="hljs-variable">center</span>'}}</span><span class="xml"><span class="hljs-tag">&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">backgroundColor</span>: '<span class="hljs-begin-block">#fefefe</span>', <span class="hljs-variable">width</span>: 30, <span class="hljs-variable">height</span>: 30, <span class="hljs-variable">borderRadius</span>: 15}}</span><span class="xml"><span class="hljs-tag">/&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
+    &lt;/</span>Text&gt;
+    &lt;View style=<span class="hljs-template-variable">{{<span class="hljs-symbol">height:</span> <span class="hljs-number">100</span>, <span class="hljs-symbol">backgroundColor:</span> <span class="hljs-string">'#333333'</span>, <span class="hljs-symbol">justifyContent:</span> <span class="hljs-string">'center'</span>}}</span>&gt;
+      &lt;View style=<span class="hljs-template-variable">{{<span class="hljs-symbol">backgroundColor:</span> <span class="hljs-string">'#fefefe'</span>, <span class="hljs-symbol">width:</span> <span class="hljs-number">30</span>, <span class="hljs-symbol">height:</span> <span class="hljs-number">30</span>, <span class="hljs-symbol">borderRadius:</span> <span class="hljs-number">15</span>}}</span>/&gt;
+    &lt;<span class="hljs-regexp">/View&gt;
 
-    <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{[styles.text,</span> <span class="hljs-attribute">styles.header</span>]}&gt;</span>
+    &lt;Text style={[styles.text, styles.header]}&gt;
         水平垂直居中
-    <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">height</span>: 100, <span class="hljs-variable">backgroundColor</span>: '#333333', <span class="hljs-variable">alignItems</span>: '<span class="hljs-variable">center</span>', <span class="hljs-variable">justifyContent</span>: '<span class="hljs-variable">center</span>'}}</span><span class="xml"><span class="hljs-tag">&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">backgroundColor</span>: '<span class="hljs-begin-block">#fefefe</span>', <span class="hljs-variable">width</span>: 30, <span class="hljs-variable">height</span>: 30, <span class="hljs-variable">borderRadius</span>: 15}}</span><span class="xml"><span class="hljs-tag">/&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span></span>
+    &lt;/</span>Text&gt;
+    &lt;View style=<span class="hljs-template-variable">{{<span class="hljs-symbol">height:</span> <span class="hljs-number">100</span>, <span class="hljs-symbol">backgroundColor:</span> <span class="hljs-string">'#333333'</span>, <span class="hljs-symbol">alignItems:</span> <span class="hljs-string">'center'</span>, <span class="hljs-symbol">justifyContent:</span> <span class="hljs-string">'center'</span>}}</span>&gt;
+      &lt;View style=<span class="hljs-template-variable">{{<span class="hljs-symbol">backgroundColor:</span> <span class="hljs-string">'#fefefe'</span>, <span class="hljs-symbol">width:</span> <span class="hljs-number">30</span>, <span class="hljs-symbol">height:</span> <span class="hljs-number">30</span>, <span class="hljs-symbol">borderRadius:</span> <span class="hljs-number">15</span>}}</span>/&gt;
+    &lt;<span class="hljs-regexp">/View&gt;</span>
 </code></pre>
 <p><img src="http://gtms01.alicdn.com/tps/i1/TB1lgwPHpXXXXXYXFXXKUUPQVXX-375-440.png" alt="">   </p>
 <h3 id="-">网格布局</h3>
 <p>网格布局实验， 网格布局能够满足绝大多数的日常开发需求，所以只要满足网格布局的spec，那么就可以证明react的flex布局能够满足正常开发需求 </p>
 <h4 id="-">等分的网格</h4>
 <p><img src="http://gtms03.alicdn.com/tps/i3/TB1Nf3PHpXXXXXLXpXXex4tPVXX-374-53.png" alt=""></p>
-<pre><code class="lang-javascript">    <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{styles.flexContainer}</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{styles.cell}</span>&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{styles.welcome}</span>&gt;</span>
+<pre><code class="lang-javascript"><span class="xml">    <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=</span></span><span class="hljs-template-variable">{styles.flexContainer}</span><span class="xml"><span class="hljs-tag">&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=</span></span><span class="hljs-template-variable">{styles.cell}</span><span class="xml"><span class="hljs-tag">&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=</span></span><span class="hljs-template-variable">{styles.welcome}</span><span class="xml"><span class="hljs-tag">&gt;</span>
           cell1
-        <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{styles.cell}</span>&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{styles.welcome}</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=</span></span><span class="hljs-template-variable">{styles.cell}</span><span class="xml"><span class="hljs-tag">&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=</span></span><span class="hljs-template-variable">{styles.welcome}</span><span class="xml"><span class="hljs-tag">&gt;</span>
           cell2
-        <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{styles.cell}</span>&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{styles.welcome}</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=</span></span><span class="hljs-template-variable">{styles.cell}</span><span class="xml"><span class="hljs-tag">&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=</span></span><span class="hljs-template-variable">{styles.welcome}</span><span class="xml"><span class="hljs-tag">&gt;</span>
           cell3
-        <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
 
-    styles = {
+    styles = </span><span class="hljs-template-variable">{
         flexContainer: {
             // 容器需要添加direction才能变成让子元素flex
             flexDirection: 'row'
-        },
-        cell: {
+        }</span><span class="xml">,
+        cell: </span><span class="hljs-template-variable">{
             flex: 1,
             height: 50,
             backgroundColor: '#aaaaaa'
-        },
-        welcome: {
+        }</span><span class="xml">,
+        welcome: </span><span class="hljs-template-variable">{
             fontSize: 20,
             textAlign: 'center',
             margin: 10
-        },
-    }
+        }</span><span class="xml">,
+    }</span>
 </code></pre>
 <h4 id="-flex-">左边固定， 右边固定，中间flex的布局</h4>
 <p><img src="http://gtms04.alicdn.com/tps/i4/TB1o03PHpXXXXXQXpXXrEIcPVXX-376-51.png" alt=""> </p>
-<pre><code class="lang-javascript">    <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{styles.flexContainer}</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{styles.cellfixed}</span>&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{styles.welcome}</span>&gt;</span>
+<pre><code class="lang-javascript"><span class="xml">    <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=</span></span><span class="hljs-template-variable">{styles.flexContainer}</span><span class="xml"><span class="hljs-tag">&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=</span></span><span class="hljs-template-variable">{styles.cellfixed}</span><span class="xml"><span class="hljs-tag">&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=</span></span><span class="hljs-template-variable">{styles.welcome}</span><span class="xml"><span class="hljs-tag">&gt;</span>
           fixed
-        <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{styles.cell}</span>&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{styles.welcome}</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=</span></span><span class="hljs-template-variable">{styles.cell}</span><span class="xml"><span class="hljs-tag">&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=</span></span><span class="hljs-template-variable">{styles.welcome}</span><span class="xml"><span class="hljs-tag">&gt;</span>
           flex
-        <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{styles.cellfixed}</span>&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{styles.welcome}</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=</span></span><span class="hljs-template-variable">{styles.cellfixed}</span><span class="xml"><span class="hljs-tag">&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=</span></span><span class="hljs-template-variable">{styles.welcome}</span><span class="xml"><span class="hljs-tag">&gt;</span>
           fixed
-        <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
 
-    styles = {
+    styles = </span><span class="hljs-template-variable">{
         flexContainer: {
             // 容器需要添加direction才能变成让子元素flex
             flexDirection: 'row'
-        },
-        cell: {
+        }</span><span class="xml">,
+        cell: </span><span class="hljs-template-variable">{
             flex: 1,
             height: 50,
             backgroundColor: '#aaaaaa'
-        },
-        welcome: {
+        }</span><span class="xml">,
+        welcome: </span><span class="hljs-template-variable">{
             fontSize: 20,
             textAlign: 'center',
             margin: 10
-        },
-        cellfixed: {
+        }</span><span class="xml">,
+        cellfixed: </span><span class="hljs-template-variable">{
             height: 50,
             width: 80,
             backgroundColor: '#fefefe'
-        } 
-    }
+        }</span><span class="xml"> 
+    }</span>
 </code></pre>
 <h4 id="-">嵌套的网格</h4>
 <p>通常网格不是一层的，布局容器都是一层套一层的， 所以必须验证在<code>real world</code>下面的网格布局 </p>
-<pre><code class="lang-html"><span class="xml"> <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{[styles.text,</span> <span class="hljs-attribute">styles.header</span>]}&gt;</span>
+<pre><code class="lang-html"> &lt;Text style={[styles.text, styles.header]}&gt;
     嵌套的网格
-  <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
-  <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flexDirection</span>: '<span class="hljs-variable">row</span>', <span class="hljs-variable">height</span>: 200, <span class="hljs-variable">backgroundColor</span>:<span class="hljs-string">"#fefefe"</span>, <span class="hljs-variable">padding</span>: 20}}</span><span class="xml"><span class="hljs-tag">&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flex</span>: 1, <span class="hljs-variable">flexDirection</span>:'<span class="hljs-variable">column</span>', <span class="hljs-variable">padding</span>: 15, <span class="hljs-variable">backgroundColor</span>:<span class="hljs-string">"#eeeeee"</span>}}</span><span class="xml"><span class="hljs-tag">&gt;</span>  
-        <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flex</span>: 1, <span class="hljs-variable">backgroundColor</span>:<span class="hljs-string">"#bbaaaa"</span>}}</span><span class="xml"><span class="hljs-tag">&gt;</span>  
-        <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flex</span>: 1, <span class="hljs-variable">backgroundColor</span>:<span class="hljs-string">"#aabbaa"</span>}}</span><span class="xml"><span class="hljs-tag">&gt;</span>
-        <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flex</span>: 1, <span class="hljs-variable">padding</span>: 15, <span class="hljs-variable">flexDirection</span>:'<span class="hljs-variable">row</span>', <span class="hljs-variable">backgroundColor</span>:<span class="hljs-string">"#eeeeee"</span>}}</span><span class="xml"><span class="hljs-tag">&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flex</span>: 1, <span class="hljs-variable">backgroundColor</span>:<span class="hljs-string">"#aaaabb"</span>}}</span><span class="xml"><span class="hljs-tag">&gt;</span>  
-            <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flex</span>: 1, <span class="hljs-variable">flexDirection</span>:'<span class="hljs-variable">row</span>', <span class="hljs-variable">backgroundColor</span>:<span class="hljs-string">"#eeaaaa"</span>}}</span><span class="xml"><span class="hljs-tag">&gt;</span> 
-               <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flex</span>: 1, <span class="hljs-variable">backgroundColor</span>:<span class="hljs-string">"#eebbaa"</span>}}</span><span class="xml"><span class="hljs-tag">&gt;</span>  
-              <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
-              <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flex</span>: 1, <span class="hljs-variable">backgroundColor</span>:<span class="hljs-string">"#bbccee"</span>}}</span><span class="xml"><span class="hljs-tag">&gt;</span>
-              <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span> 
-            <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
-            <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flex</span>: 1, <span class="hljs-variable">backgroundColor</span>:<span class="hljs-string">"#eebbdd"</span>}}</span><span class="xml"><span class="hljs-tag">&gt;</span>
-            <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
-        <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flex</span>: 1, <span class="hljs-variable">backgroundColor</span>:<span class="hljs-string">"#aaccaa"</span>}}</span><span class="xml"><span class="hljs-tag">&gt;</span>
-          <span class="hljs-tag">&lt;<span class="hljs-title">ScrollView</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flex</span>: 1, <span class="hljs-variable">backgroundColor</span>:<span class="hljs-string">"#bbccdd"</span>, <span class="hljs-variable">padding</span>: 5}}</span><span class="xml"><span class="hljs-tag">&gt;</span>
-                <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flexDirection</span>: '<span class="hljs-variable">row</span>', <span class="hljs-variable">height</span>: 50, <span class="hljs-variable">backgroundColor</span>:<span class="hljs-string">"#fefefe"</span>}}</span><span class="xml"><span class="hljs-tag">&gt;</span>
-                  <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flex</span>: 1, <span class="hljs-variable">flexDirection</span>:'<span class="hljs-variable">column</span>', <span class="hljs-variable">backgroundColor</span>:<span class="hljs-string">"#eeeeee"</span>}}</span><span class="xml"><span class="hljs-tag">&gt;</span>  
-                      <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flex</span>: 1, <span class="hljs-variable">backgroundColor</span>:<span class="hljs-string">"#bbaaaa"</span>}}</span><span class="xml"><span class="hljs-tag">&gt;</span>  
-                      <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
-                      <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flex</span>: 1, <span class="hljs-variable">backgroundColor</span>:<span class="hljs-string">"#aabbaa"</span>}}</span><span class="xml"><span class="hljs-tag">&gt;</span>
-                      <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
-                  <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
-                  <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flex</span>: 1, <span class="hljs-variable">flexDirection</span>:'<span class="hljs-variable">row</span>', <span class="hljs-variable">backgroundColor</span>:<span class="hljs-string">"#eeeeee"</span>}}</span><span class="xml"><span class="hljs-tag">&gt;</span>
-                      <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flex</span>: 1, <span class="hljs-variable">backgroundColor</span>:<span class="hljs-string">"#aaaabb"</span>}}</span><span class="xml"><span class="hljs-tag">&gt;</span>  
-                          <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flex</span>: 1, <span class="hljs-variable">flexDirection</span>:'<span class="hljs-variable">row</span>', <span class="hljs-variable">backgroundColor</span>:<span class="hljs-string">"#eeaaaa"</span>}}</span><span class="xml"><span class="hljs-tag">&gt;</span> 
-                             <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flex</span>: 1, <span class="hljs-variable">backgroundColor</span>:<span class="hljs-string">"#eebbaa"</span>}}</span><span class="xml"><span class="hljs-tag">&gt;</span>  
-                            <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
-                            <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flex</span>: 1, <span class="hljs-variable">backgroundColor</span>:<span class="hljs-string">"#bbccee"</span>}}</span><span class="xml"><span class="hljs-tag">&gt;</span>
-                            <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span> 
-                          <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
-                          <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flex</span>: 1, <span class="hljs-variable">backgroundColor</span>:<span class="hljs-string">"#eebbdd"</span>}}</span><span class="xml"><span class="hljs-tag">&gt;</span>
-                          <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
-                      <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
-                      <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flex</span>: 1, <span class="hljs-variable">backgroundColor</span>:<span class="hljs-string">"#aaccaa"</span>}}</span><span class="xml"><span class="hljs-tag">&gt;</span>
-                      <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
-                  <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
-                <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
-                <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{[styles.text,</span> <span class="hljs-attribute">styles.header</span>, {<span class="hljs-attribute">color:</span> '#<span class="hljs-attribute">ffffff</span>', <span class="hljs-attribute">fontSize:</span> <span class="hljs-attribute">12</span>}]}&gt;</span>
+  &lt;<span class="hljs-regexp">/Text&gt;
+  &lt;View style={{flexDirection: 'row', height: 200, backgroundColor:"#fefefe", padding: 20}}&gt;
+    &lt;View style={{flex: 1, flexDirection:'column', padding: 15, backgroundColor:"#eeeeee"}}&gt;  
+        &lt;View style={{flex: 1, backgroundColor:"#bbaaaa"}}&gt;  
+        &lt;/</span>View&gt;
+        &lt;View style=<span class="hljs-template-variable">{{<span class="hljs-symbol">flex:</span> <span class="hljs-number">1</span>, <span class="hljs-symbol">backgroundColor:</span><span class="hljs-string">"#aabbaa"</span>}}</span>&gt;
+        &lt;<span class="hljs-regexp">/View&gt;
+    &lt;/</span>View&gt;
+    &lt;View style=<span class="hljs-template-variable">{{<span class="hljs-symbol">flex:</span> <span class="hljs-number">1</span>, <span class="hljs-symbol">padding:</span> <span class="hljs-number">15</span>, <span class="hljs-symbol">flexDirection:</span><span class="hljs-string">'row'</span>, <span class="hljs-symbol">backgroundColor:</span><span class="hljs-string">"#eeeeee"</span>}}</span>&gt;
+        &lt;View style=<span class="hljs-template-variable">{{<span class="hljs-symbol">flex:</span> <span class="hljs-number">1</span>, <span class="hljs-symbol">backgroundColor:</span><span class="hljs-string">"#aaaabb"</span>}}</span>&gt;  
+            &lt;View style=<span class="hljs-template-variable">{{<span class="hljs-symbol">flex:</span> <span class="hljs-number">1</span>, <span class="hljs-symbol">flexDirection:</span><span class="hljs-string">'row'</span>, <span class="hljs-symbol">backgroundColor:</span><span class="hljs-string">"#eeaaaa"</span>}}</span>&gt; 
+               &lt;View style=<span class="hljs-template-variable">{{<span class="hljs-symbol">flex:</span> <span class="hljs-number">1</span>, <span class="hljs-symbol">backgroundColor:</span><span class="hljs-string">"#eebbaa"</span>}}</span>&gt;  
+              &lt;<span class="hljs-regexp">/View&gt;
+              &lt;View style={{flex: 1, backgroundColor:"#bbccee"}}&gt;
+              &lt;/</span>View&gt; 
+            &lt;<span class="hljs-regexp">/View&gt;
+            &lt;View style={{flex: 1, backgroundColor:"#eebbdd"}}&gt;
+            &lt;/</span>View&gt;
+        &lt;<span class="hljs-regexp">/View&gt;
+        &lt;View style={{flex: 1, backgroundColor:"#aaccaa"}}&gt;
+          &lt;ScrollView style={{flex: 1, backgroundColor:"#bbccdd", padding: 5}}&gt;
+                &lt;View style={{flexDirection: 'row', height: 50, backgroundColor:"#fefefe"}}&gt;
+                  &lt;View style={{flex: 1, flexDirection:'column', backgroundColor:"#eeeeee"}}&gt;  
+                      &lt;View style={{flex: 1, backgroundColor:"#bbaaaa"}}&gt;  
+                      &lt;/</span>View&gt;
+                      &lt;View style=<span class="hljs-template-variable">{{<span class="hljs-symbol">flex:</span> <span class="hljs-number">1</span>, <span class="hljs-symbol">backgroundColor:</span><span class="hljs-string">"#aabbaa"</span>}}</span>&gt;
+                      &lt;<span class="hljs-regexp">/View&gt;
+                  &lt;/</span>View&gt;
+                  &lt;View style=<span class="hljs-template-variable">{{<span class="hljs-symbol">flex:</span> <span class="hljs-number">1</span>, <span class="hljs-symbol">flexDirection:</span><span class="hljs-string">'row'</span>, <span class="hljs-symbol">backgroundColor:</span><span class="hljs-string">"#eeeeee"</span>}}</span>&gt;
+                      &lt;View style=<span class="hljs-template-variable">{{<span class="hljs-symbol">flex:</span> <span class="hljs-number">1</span>, <span class="hljs-symbol">backgroundColor:</span><span class="hljs-string">"#aaaabb"</span>}}</span>&gt;  
+                          &lt;View style=<span class="hljs-template-variable">{{<span class="hljs-symbol">flex:</span> <span class="hljs-number">1</span>, <span class="hljs-symbol">flexDirection:</span><span class="hljs-string">'row'</span>, <span class="hljs-symbol">backgroundColor:</span><span class="hljs-string">"#eeaaaa"</span>}}</span>&gt; 
+                             &lt;View style=<span class="hljs-template-variable">{{<span class="hljs-symbol">flex:</span> <span class="hljs-number">1</span>, <span class="hljs-symbol">backgroundColor:</span><span class="hljs-string">"#eebbaa"</span>}}</span>&gt;  
+                            &lt;<span class="hljs-regexp">/View&gt;
+                            &lt;View style={{flex: 1, backgroundColor:"#bbccee"}}&gt;
+                            &lt;/</span>View&gt; 
+                          &lt;<span class="hljs-regexp">/View&gt;
+                          &lt;View style={{flex: 1, backgroundColor:"#eebbdd"}}&gt;
+                          &lt;/</span>View&gt;
+                      &lt;<span class="hljs-regexp">/View&gt;
+                      &lt;View style={{flex: 1, backgroundColor:"#aaccaa"}}&gt;
+                      &lt;/</span>View&gt;
+                  &lt;<span class="hljs-regexp">/View&gt;
+                &lt;/</span>View&gt;
+                &lt;Text style={[styles.text, styles.header, {<span class="hljs-symbol">color:</span> <span class="hljs-string">'#ffffff'</span>, <span class="hljs-symbol">fontSize:</span> <span class="hljs-number">12</span>}]}&gt;
                   {(function(){
-                    var str = '';
-                    var n = 100;
-                    while(n--) {
-                      str += '嵌套的网格' + '\n';
+                    var str = <span class="hljs-string">''</span>;
+                    var n = <span class="hljs-number">100</span>;
+                    <span class="hljs-keyword">while</span>(n--) {
+                      str += <span class="hljs-string">'嵌套的网格'</span> + <span class="hljs-string">'\n'</span>;
                     }
-                    return str;
+                    <span class="hljs-keyword">return</span> str;
                   })()}
-                <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
-          <span class="hljs-tag">&lt;/<span class="hljs-title">ScrollView</span>&gt;</span> 
-        <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
-  <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span></span>
+                &lt;<span class="hljs-regexp">/Text&gt;
+          &lt;/</span>ScrollView&gt; 
+        &lt;<span class="hljs-regexp">/View&gt;
+    &lt;/</span>View&gt;
+  &lt;<span class="hljs-regexp">/View&gt;</span>
 </code></pre>
 <p><img src="http://gtms03.alicdn.com/tps/i3/TB1MR7MHpXXXXbbXVXXrypWOFXX-371-229.png" alt=""></p>
 <p>好在没被我玩儿坏，可以看到上图的嵌套关系也是足够的复杂的，（我还加了一个ScrollView，然后再嵌套整个结构）嵌套多层的布局是没有问题的。 </p>
@@ -263,125 +263,125 @@
 </code></pre>
 <p>打印出来的是 contain, cover, stretch 这几种模式， （官方文档不知道为什么不直接给出）</p>
 <h3 id="-mode">尝试使用这些mode</h3>
-<pre><code class="lang-javascript"><span class="xml">  <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{styles.welcome}</span>&gt;</span> 100px height <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
-  <span class="hljs-tag">&lt;<span class="hljs-title">Image</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">height</span>: 100}}</span><span class="xml"><span class="hljs-tag"> <span class="hljs-attribute">source</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">uri</span>: '<span class="hljs-variable">http</span>:/<span class="hljs-end-block">/gtms</span>03<span class="hljs-variable">.alicdn.com</span><span class="hljs-end-block">/tps</span><span class="hljs-end-block">/i</span>3<span class="hljs-end-block">/TB</span>1<span class="hljs-variable">Kcs</span>5<span class="hljs-variable">GXXXXXbMXVXXutsrNFXX-</span>608<span class="hljs-variable">-</span>370<span class="hljs-variable">.png</span>'}}</span><span class="xml"><span class="hljs-tag"> /&gt;</span></span>
+<pre><code class="lang-javascript">  <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.welcome}</span>&gt;</span> 100px height <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{height:</span> <span class="hljs-attr">100</span>}} <span class="hljs-attr">source</span>=<span class="hljs-string">{{uri:</span> '<span class="hljs-attr">http:</span>//<span class="hljs-attr">gtms03.alicdn.com</span>/<span class="hljs-attr">tps</span>/<span class="hljs-attr">i3</span>/<span class="hljs-attr">TB1Kcs5GXXXXXbMXVXXutsrNFXX-608-370.png</span>'}} /&gt;</span>
 </code></pre>
 <p><img src="http://gtms02.alicdn.com/tps/i2/TB12zZNHpXXXXcsXpXXItPuSXXX-377-139.png" alt=""> </p>
 <p>100px 高度， 可以看到图片适应100高度和全屏宽度，背景居中适应未拉伸但是被截断也就是cover。  </p>
-<pre><code class="lang-javascript"><span class="xml">  <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{styles.welcome}</span>&gt;</span> 100px height with resizeMode contain <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
-  <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{[{flex:</span> <span class="hljs-attribute">1</span>, <span class="hljs-attribute">backgroundColor:</span> '#<span class="hljs-attribute">fe0000</span>'}]}&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-title">Image</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flex</span>: 1, <span class="hljs-variable">height</span>: 100, <span class="hljs-variable">resizeMode</span>: <span class="hljs-variable">Image.resizeMode.contain</span>}}</span><span class="xml"><span class="hljs-tag"> <span class="hljs-attribute">source</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">uri</span>: '<span class="hljs-variable">http</span>:/<span class="hljs-end-block">/gtms</span>03<span class="hljs-variable">.alicdn.com</span><span class="hljs-end-block">/tps</span><span class="hljs-end-block">/i</span>3<span class="hljs-end-block">/TB</span>1<span class="hljs-variable">Kcs</span>5<span class="hljs-variable">GXXXXXbMXVXXutsrNFXX-</span>608<span class="hljs-variable">-</span>370<span class="hljs-variable">.png</span>'}}</span><span class="xml"><span class="hljs-tag"> /&gt;</span>
-  <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span></span>
+<pre><code class="lang-javascript">  <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.welcome}</span>&gt;</span> 100px height with resizeMode contain <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[{flex:</span> <span class="hljs-attr">1</span>, <span class="hljs-attr">backgroundColor:</span> '#<span class="hljs-attr">fe0000</span>'}]}&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{flex:</span> <span class="hljs-attr">1</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>, <span class="hljs-attr">resizeMode:</span> <span class="hljs-attr">Image.resizeMode.contain</span>}} <span class="hljs-attr">source</span>=<span class="hljs-string">{{uri:</span> '<span class="hljs-attr">http:</span>//<span class="hljs-attr">gtms03.alicdn.com</span>/<span class="hljs-attr">tps</span>/<span class="hljs-attr">i3</span>/<span class="hljs-attr">TB1Kcs5GXXXXXbMXVXXutsrNFXX-608-370.png</span>'}} /&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
 </code></pre>
 <p><img src="http://gtms01.alicdn.com/tps/i1/TB1dxUMHpXXXXbHXFXXM0JSRFXX-376-141.png" alt=""><br>contain 模式容器完全容纳图片，图片自适应宽高</p>
-<pre><code class="lang-javascript"><span class="xml">  <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{styles.welcome}</span>&gt;</span> 100px height with resizeMode cover <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
-  <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{[{flex:</span> <span class="hljs-attribute">1</span>, <span class="hljs-attribute">backgroundColor:</span> '#<span class="hljs-attribute">fe0000</span>'}]}&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-title">Image</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flex</span>: 1, <span class="hljs-variable">height</span>: 100, <span class="hljs-variable">resizeMode</span>: <span class="hljs-variable">Image.resizeMode.cover</span>}}</span><span class="xml"><span class="hljs-tag"> <span class="hljs-attribute">source</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">uri</span>: '<span class="hljs-variable">http</span>:/<span class="hljs-end-block">/gtms</span>03<span class="hljs-variable">.alicdn.com</span><span class="hljs-end-block">/tps</span><span class="hljs-end-block">/i</span>3<span class="hljs-end-block">/TB</span>1<span class="hljs-variable">Kcs</span>5<span class="hljs-variable">GXXXXXbMXVXXutsrNFXX-</span>608<span class="hljs-variable">-</span>370<span class="hljs-variable">.png</span>'}}</span><span class="xml"><span class="hljs-tag"> /&gt;</span>
-  <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span></span>
+<pre><code class="lang-javascript">  <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.welcome}</span>&gt;</span> 100px height with resizeMode cover <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[{flex:</span> <span class="hljs-attr">1</span>, <span class="hljs-attr">backgroundColor:</span> '#<span class="hljs-attr">fe0000</span>'}]}&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{flex:</span> <span class="hljs-attr">1</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>, <span class="hljs-attr">resizeMode:</span> <span class="hljs-attr">Image.resizeMode.cover</span>}} <span class="hljs-attr">source</span>=<span class="hljs-string">{{uri:</span> '<span class="hljs-attr">http:</span>//<span class="hljs-attr">gtms03.alicdn.com</span>/<span class="hljs-attr">tps</span>/<span class="hljs-attr">i3</span>/<span class="hljs-attr">TB1Kcs5GXXXXXbMXVXXutsrNFXX-608-370.png</span>'}} /&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
 </code></pre>
 <p><img src="http://gtms03.alicdn.com/tps/i3/TB1XIwNHpXXXXXnXFXX_XBSRFXX-376-140.png" alt=""></p>
 <p>cover模式同100px高度模式</p>
-<pre><code class="lang-javascript"><span class="xml">
-  <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{styles.welcome}</span>&gt;</span> 100px height with resizeMode stretch <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
-  <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{[{flex:</span> <span class="hljs-attribute">1</span>, <span class="hljs-attribute">backgroundColor:</span> '#<span class="hljs-attribute">fe0000</span>'}]}&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-title">Image</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flex</span>: 1, <span class="hljs-variable">height</span>: 100, <span class="hljs-variable">resizeMode</span>: <span class="hljs-variable">Image.resizeMode.stretch</span>}}</span><span class="xml"><span class="hljs-tag"> <span class="hljs-attribute">source</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">uri</span>: '<span class="hljs-variable">http</span>:/<span class="hljs-end-block">/gtms</span>03<span class="hljs-variable">.alicdn.com</span><span class="hljs-end-block">/tps</span><span class="hljs-end-block">/i</span>3<span class="hljs-end-block">/TB</span>1<span class="hljs-variable">Kcs</span>5<span class="hljs-variable">GXXXXXbMXVXXutsrNFXX-</span>608<span class="hljs-variable">-</span>370<span class="hljs-variable">.png</span>'}}</span><span class="xml"><span class="hljs-tag"> /&gt;</span>
-  <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span></span>
+<pre><code class="lang-javascript">
+  <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.welcome}</span>&gt;</span> 100px height with resizeMode stretch <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[{flex:</span> <span class="hljs-attr">1</span>, <span class="hljs-attr">backgroundColor:</span> '#<span class="hljs-attr">fe0000</span>'}]}&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{flex:</span> <span class="hljs-attr">1</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>, <span class="hljs-attr">resizeMode:</span> <span class="hljs-attr">Image.resizeMode.stretch</span>}} <span class="hljs-attr">source</span>=<span class="hljs-string">{{uri:</span> '<span class="hljs-attr">http:</span>//<span class="hljs-attr">gtms03.alicdn.com</span>/<span class="hljs-attr">tps</span>/<span class="hljs-attr">i3</span>/<span class="hljs-attr">TB1Kcs5GXXXXXbMXVXXutsrNFXX-608-370.png</span>'}} /&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
 </code></pre>
 <p><img src="http://gtms04.alicdn.com/tps/i4/TB1f8eNHpXXXXb0aXXX0ijvSXXX-377-147.png" alt=""></p>
 <p>stretch模式图片被拉伸适应屏幕</p>
-<pre><code class="lang-javascript"><span class="xml">  <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{styles.welcome}</span>&gt;</span> set height to image container <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
-  <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{[{flex:</span> <span class="hljs-attribute">1</span>, <span class="hljs-attribute">backgroundColor:</span> '#<span class="hljs-attribute">fe0000</span>', <span class="hljs-attribute">height:</span> <span class="hljs-attribute">100</span>}]}&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-title">Image</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">flex</span>: 1}}</span><span class="xml"><span class="hljs-tag"> <span class="hljs-attribute">source</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">uri</span>: '<span class="hljs-variable">http</span>:/<span class="hljs-end-block">/gtms</span>03<span class="hljs-variable">.alicdn.com</span><span class="hljs-end-block">/tps</span><span class="hljs-end-block">/i</span>3<span class="hljs-end-block">/TB</span>1<span class="hljs-variable">Kcs</span>5<span class="hljs-variable">GXXXXXbMXVXXutsrNFXX-</span>608<span class="hljs-variable">-</span>370<span class="hljs-variable">.png</span>'}}</span><span class="xml"><span class="hljs-tag"> /&gt;</span>
-  <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span></span>
+<pre><code class="lang-javascript">  &lt;Text style={styles.welcome}&gt; set height <span class="hljs-keyword">to</span> image container &lt;/Text&gt;
+  &lt;View style={[{flex: <span class="hljs-number">1</span>, backgroundColor: <span class="hljs-string">'#fe0000'</span>, height: <span class="hljs-number">100</span>}]}&gt;
+      &lt;Image style={{flex: <span class="hljs-number">1</span>}} source={{uri: <span class="hljs-string">'http://gtms03.alicdn.com/tps/i3/TB1Kcs5GXXXXXbMXVXXutsrNFXX-608-370.png'</span>}} /&gt;
+  &lt;/View&gt;
 </code></pre>
 <p><img src="http://gtms01.alicdn.com/tps/i1/TB1h0cQHpXXXXcrXXXX4OdTRFXX-376-146.png" alt=""> </p>
 <p>随便试验了一下， 发现高度设置到父容器，图片flex的时候也会等同于cover模式 </p>
 <h2 id="-">绝对定位和相对定位</h2>
-<pre><code class="lang-javascript"> &lt;View style={{<span class="hljs-string">flex:</span> <span class="hljs-number">1</span>, <span class="hljs-string">height:</span> <span class="hljs-number">100</span>, <span class="hljs-string">backgroundColor:</span> <span class="hljs-string">'#333333'</span>}}&gt;
-    &lt;View style={[styles.circle, {<span class="hljs-string">position:</span> <span class="hljs-string">'absolute'</span>, <span class="hljs-string">top:</span> <span class="hljs-number">50</span>, <span class="hljs-string">left:</span> <span class="hljs-number">180</span>}]}&gt;
-    &lt;/View&gt;
-  &lt;/View&gt;
+<pre><code class="lang-javascript"> &lt;View style=<span class="hljs-template-variable">{{<span class="hljs-symbol">flex:</span> <span class="hljs-number">1</span>, <span class="hljs-symbol">height:</span> <span class="hljs-number">100</span>, <span class="hljs-symbol">backgroundColor:</span> <span class="hljs-string">'#333333'</span>}}</span>&gt;
+    &lt;View style={[styles.circle, {<span class="hljs-symbol">position:</span> <span class="hljs-string">'absolute'</span>, <span class="hljs-symbol">top:</span> <span class="hljs-number">50</span>, <span class="hljs-symbol">left:</span> <span class="hljs-number">180</span>}]}&gt;
+    &lt;<span class="hljs-regexp">/View&gt;
+  &lt;/</span>View&gt;
   styles = {
-<span class="hljs-label">    circle:</span> {
-<span class="hljs-label">    backgroundColor:</span> <span class="hljs-string">'#fe0000'</span>,
-<span class="hljs-label">    borderRadius:</span> <span class="hljs-number">10</span>,
-<span class="hljs-label">    width:</span> <span class="hljs-number">20</span>,
-<span class="hljs-label">    height:</span> <span class="hljs-number">20</span>
+    <span class="hljs-symbol">circle:</span> {
+    <span class="hljs-symbol">backgroundColor:</span> <span class="hljs-string">'#fe0000'</span>,
+    <span class="hljs-symbol">borderRadius:</span> <span class="hljs-number">10</span>,
+    <span class="hljs-symbol">width:</span> <span class="hljs-number">20</span>,
+    <span class="hljs-symbol">height:</span> <span class="hljs-number">20</span>
     }
   }
 </code></pre>
 <p><img src="http://gtms03.alicdn.com/tps/i3/TB1nosRHpXXXXX3XXXXgUklPVXX-376-98.png" alt=""> </p>
 <p>和css的标准不同的是， 元素容器不用设置<code>position：&#39;absolute|relative&#39;</code> .  </p>
-<pre><code class="lang-javascript"> &lt;View style={{<span class="hljs-string">flex:</span> <span class="hljs-number">1</span>, <span class="hljs-string">height:</span> <span class="hljs-number">100</span>, <span class="hljs-string">backgroundColor:</span> <span class="hljs-string">'#333333'</span>}}&gt;
-    &lt;View style={[styles.circle, {<span class="hljs-string">position:</span> <span class="hljs-string">'relative'</span>, <span class="hljs-string">top:</span> <span class="hljs-number">50</span>, <span class="hljs-string">left:</span> <span class="hljs-number">50</span>, <span class="hljs-string">marginLeft:</span> <span class="hljs-number">50</span>}]}&gt;
-    &lt;/View&gt;
-  &lt;/View&gt;
+<pre><code class="lang-javascript"> &lt;View style=<span class="hljs-template-variable">{{<span class="hljs-symbol">flex:</span> <span class="hljs-number">1</span>, <span class="hljs-symbol">height:</span> <span class="hljs-number">100</span>, <span class="hljs-symbol">backgroundColor:</span> <span class="hljs-string">'#333333'</span>}}</span>&gt;
+    &lt;View style={[styles.circle, {<span class="hljs-symbol">position:</span> <span class="hljs-string">'relative'</span>, <span class="hljs-symbol">top:</span> <span class="hljs-number">50</span>, <span class="hljs-symbol">left:</span> <span class="hljs-number">50</span>, <span class="hljs-symbol">marginLeft:</span> <span class="hljs-number">50</span>}]}&gt;
+    &lt;<span class="hljs-regexp">/View&gt;
+  &lt;/</span>View&gt;
 </code></pre>
 <p><img src="http://gtms04.alicdn.com/tps/i4/TB1qi7PHpXXXXXGXpXXsNdBPVXX-374-96.png" alt=""></p>
 <p>相对定位的可以看到很容易的配合margin做到了。 （我还担心不能配合margin，所以测试了一下：-：） </p>
 <h2 id="padding-margin">padding和margin</h2>
 <p>我们知道在css中区分inline元素和block元素，既然react-native实现了一个超级小的css subset。那我们就来实验一下padding和margin在inline和非inline元素上的padding和margin的使用情况。  </p>
 <p><strong>padding </strong> </p>
-<pre><code class="lang-html"><span class="xml"> <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{[styles.text,</span> <span class="hljs-attribute">styles.header</span>]}&gt;</span>
+<pre><code class="lang-html"> <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.text,</span> <span class="hljs-attr">styles.header</span>]}&gt;</span>
     在正常的View上设置padding 
-  <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
 
-  <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">padding</span>: 30, <span class="hljs-variable">backgroundColor</span>: '#333333'}}</span><span class="xml"><span class="hljs-tag">&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{[styles.text,</span> {<span class="hljs-attribute">color:</span> '#<span class="hljs-attribute">fefefe</span>'}]}&gt;</span> Text Element<span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
-  <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{padding:</span> <span class="hljs-attr">30</span>, <span class="hljs-attr">backgroundColor:</span> '#<span class="hljs-attr">333333</span>'}}&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.text,</span> {<span class="hljs-attr">color:</span> '#<span class="hljs-attr">fefefe</span>'}]}&gt;</span> Text Element<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
 
-  <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{[styles.text,</span> <span class="hljs-attribute">styles.header</span>]}&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.text,</span> <span class="hljs-attr">styles.header</span>]}&gt;</span>
     在文本元素上设置padding
-  <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
-  <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">padding</span>: 0, <span class="hljs-variable">backgroundColor</span>: '#333333'}}</span><span class="xml"><span class="hljs-tag">&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{[styles.text,</span> {<span class="hljs-attribute">backgroundColor:</span> '#<span class="hljs-attribute">fe0000</span>', <span class="hljs-attribute">padding:</span> <span class="hljs-attribute">30</span>}]}&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{padding:</span> <span class="hljs-attr">0</span>, <span class="hljs-attr">backgroundColor:</span> '#<span class="hljs-attr">333333</span>'}}&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.text,</span> {<span class="hljs-attr">backgroundColor:</span> '#<span class="hljs-attr">fe0000</span>', <span class="hljs-attr">padding:</span> <span class="hljs-attr">30</span>}]}&gt;</span>
       text 元素上设置paddinga
-    <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
-  <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span></span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
 </code></pre>
 <p><img src="http://gtms04.alicdn.com/tps/i4/TB1F6APHpXXXXXKXFXXcAMvQVXX-375-265.png" alt=""></p>
 <p>在View上设置padding很顺利，没有任何问题， 但是如果在inline元素上设置padding， 发现会出现上面的错误， paddingTop和paddingBottom都被挤成marginBottom了。 按理说，不应该对Text做padding处理， 但是确实有这样的问题存在，所以可以将这个问题mark一下。 </p>
 <p><strong>margin</strong></p>
-<pre><code class="lang-html"><span class="xml"> <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{[styles.text,</span> <span class="hljs-attribute">styles.header</span>]}&gt;</span>
+<pre><code class="lang-html"> <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.text,</span> <span class="hljs-attr">styles.header</span>]}&gt;</span>
     在正常的View上设置margin 
-  <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
 
-  <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">backgroundColor</span>: '#333333'}}</span><span class="xml"><span class="hljs-tag">&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">backgroundColor</span>: '<span class="hljs-begin-block">#fefefe</span>', <span class="hljs-variable">width</span>: 30, <span class="hljs-variable">height</span>: 30, <span class="hljs-variable">margin</span>: 30}}</span><span class="xml"><span class="hljs-tag">/&gt;</span>
-  <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{backgroundColor:</span> '#<span class="hljs-attr">333333</span>'}}&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{backgroundColor:</span> '#<span class="hljs-attr">fefefe</span>', <span class="hljs-attr">width:</span> <span class="hljs-attr">30</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">30</span>, <span class="hljs-attr">margin:</span> <span class="hljs-attr">30</span>}}/&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
 
-  <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{[styles.text,</span> <span class="hljs-attribute">styles.header</span>]}&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.text,</span> <span class="hljs-attr">styles.header</span>]}&gt;</span>
     在文本元素上设置margin
-  <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
-  <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">backgroundColor</span>: '#333333'}}</span><span class="xml"><span class="hljs-tag">&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{[styles.text,</span> {<span class="hljs-attribute">backgroundColor:</span> '#<span class="hljs-attribute">fe0000</span>', <span class="hljs-attribute">margin:</span> <span class="hljs-attribute">30</span>}]}&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{backgroundColor:</span> '#<span class="hljs-attr">333333</span>'}}&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.text,</span> {<span class="hljs-attr">backgroundColor:</span> '#<span class="hljs-attr">fe0000</span>', <span class="hljs-attr">margin:</span> <span class="hljs-attr">30</span>}]}&gt;</span>
       text 元素上设置margin
-    <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{[styles.text,</span> {<span class="hljs-attribute">backgroundColor:</span> '#<span class="hljs-attribute">fe0000</span>', <span class="hljs-attribute">margin:</span> <span class="hljs-attribute">30</span>}]}&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.text,</span> {<span class="hljs-attr">backgroundColor:</span> '#<span class="hljs-attr">fe0000</span>', <span class="hljs-attr">margin:</span> <span class="hljs-attr">30</span>}]}&gt;</span>
       text 元素上设置margin
-    <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
-  <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span></span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
 </code></pre>
 <p><img src="http://gtms03.alicdn.com/tps/i3/TB1yuYvHpXXXXXUaXXXlcAFQVXX-375-347.png" alt=""></p>
 <p>我们知道，对于inline元素，设置margin-left和margin-right有效，top和bottom按理是不会生效的， 但是上图的结果可以看到，实际是生效了的。所以现在给我的感觉是Text元素更应该理解为一个不能设置padding的block。 </p>
 <p>算了不要猜了， 我们看看官方文档怎么说Text，<a href="https://facebook.github.io/react-native/docs/text.html">https://facebook.github.io/react-native/docs/text.html</a> </p>
-<pre><code class="lang-html">  &lt;<span class="hljs-keyword">Text</span>&gt;
-    &lt;<span class="hljs-keyword">Text</span>&gt;<span class="hljs-keyword">First</span> part and &lt;/<span class="hljs-keyword">Text</span>&gt;
-    &lt;<span class="hljs-keyword">Text</span>&gt;second part&lt;/<span class="hljs-keyword">Text</span>&gt;
-  &lt;/<span class="hljs-keyword">Text</span>&gt;
-  // <span class="hljs-keyword">Text</span> container: all the text flows as if it was one
-  // |<span class="hljs-keyword">First</span> part |
-  // |and second |
-  // |part       |
+<pre><code class="lang-html">  <span class="hljs-variable">&lt;Text&gt;</span>
+    <span class="hljs-variable">&lt;Text&gt;</span>First part and <span class="hljs-variable">&lt;/Text&gt;</span>
+    <span class="hljs-variable">&lt;Text&gt;</span>second part<span class="hljs-variable">&lt;/Text&gt;</span>
+  <span class="hljs-variable">&lt;/Text&gt;</span>
+  // Text container: all the text flows as if it was one
+  // |<span class="hljs-string">First part </span>|
+  // |<span class="hljs-string">and second </span>|
+  // |<span class="hljs-string">part       </span>|
 
-  &lt;View&gt;
-    &lt;<span class="hljs-keyword">Text</span>&gt;<span class="hljs-keyword">First</span> part and &lt;/<span class="hljs-keyword">Text</span>&gt;
-    &lt;<span class="hljs-keyword">Text</span>&gt;second part&lt;/<span class="hljs-keyword">Text</span>&gt;
-  &lt;/View&gt;
+  <span class="hljs-variable">&lt;View&gt;</span>
+    <span class="hljs-variable">&lt;Text&gt;</span>First part and <span class="hljs-variable">&lt;/Text&gt;</span>
+    <span class="hljs-variable">&lt;Text&gt;</span>second part<span class="hljs-variable">&lt;/Text&gt;</span>
+  <span class="hljs-variable">&lt;/View&gt;</span>
   // View container: each text is its own block
-  // |<span class="hljs-keyword">First</span> part |
-  // |and        |
-  // |second part|
+  // |<span class="hljs-string">First part </span>|
+  // |<span class="hljs-string">and        </span>|
+  // |<span class="hljs-string">second part</span>|
 </code></pre>
 <p>也就是如果Text元素在Text里边，可以考虑为inline， 如果单独在View里边，那就是Block。<br>下面会专门研究一下文本相关的布局  </p>
 <h2 id="-">文本元素</h2>
@@ -406,7 +406,7 @@
   }
 </code></pre>
 <h3 id="-1-2-3">实验1， 2， 3</h3>
-<pre><code class="lang-html"> &lt;Text style={[styles.<span class="hljs-type">text</span>, styles.header]}&gt;
+<pre><code class="lang-html"> &lt;Text style={[styles.<span class="hljs-built_in">text</span>, styles.header]}&gt;
       文本元素
   &lt;/Text&gt;
 
@@ -416,7 +416,7 @@
         文本元素{'\n'}
       &lt;/Text&gt;
       &lt;Text&gt;
-        {'\n'}In this example, <span class="hljs-keyword">the</span> nested title <span class="hljs-keyword">and</span> body <span class="hljs-type">text</span> will inherit <span class="hljs-keyword">the</span> fontFamily <span class="hljs-keyword">from</span> styles.baseText, <span class="hljs-keyword">but</span> <span class="hljs-keyword">the</span> title provides <span class="hljs-keyword">its</span> own additional styles. The title <span class="hljs-keyword">and</span> body will stack <span class="hljs-function_start"><span class="hljs-keyword">on</span></span> top <span class="hljs-keyword">of</span> each other <span class="hljs-function_start"><span class="hljs-keyword">on</span></span> account <span class="hljs-keyword">of</span> <span class="hljs-keyword">the</span> literal newlines, numberOfLines <span class="hljs-keyword">is</span> Used <span class="hljs-keyword">to</span> truncate <span class="hljs-keyword">the</span> <span class="hljs-type">text</span> <span class="hljs-keyword">with</span> an elipsis <span class="hljs-keyword">after</span> computing <span class="hljs-keyword">the</span> <span class="hljs-type">text</span> layout, including line wrapping, such <span class="hljs-keyword">that</span> <span class="hljs-keyword">the</span> total <span class="hljs-type">number</span> <span class="hljs-keyword">of</span> lines <span class="hljs-keyword">does</span> <span class="hljs-keyword">not</span> exceed this <span class="hljs-type">number</span>.
+        {'\n'}In this example, <span class="hljs-keyword">the</span> nested title <span class="hljs-keyword">and</span> body <span class="hljs-built_in">text</span> will inherit <span class="hljs-keyword">the</span> fontFamily <span class="hljs-keyword">from</span> styles.baseText, <span class="hljs-keyword">but</span> <span class="hljs-keyword">the</span> title provides <span class="hljs-keyword">its</span> own additional styles. The title <span class="hljs-keyword">and</span> body will stack <span class="hljs-keyword">on</span> top <span class="hljs-keyword">of</span> each other <span class="hljs-keyword">on</span> account <span class="hljs-keyword">of</span> <span class="hljs-keyword">the</span> literal newlines, numberOfLines <span class="hljs-keyword">is</span> Used <span class="hljs-keyword">to</span> truncate <span class="hljs-keyword">the</span> <span class="hljs-built_in">text</span> <span class="hljs-keyword">with</span> an elipsis <span class="hljs-keyword">after</span> computing <span class="hljs-keyword">the</span> <span class="hljs-built_in">text</span> layout, including line wrapping, such <span class="hljs-keyword">that</span> <span class="hljs-keyword">the</span> total <span class="hljs-built_in">number</span> <span class="hljs-keyword">of</span> lines <span class="hljs-keyword">does</span> <span class="hljs-keyword">not</span> exceed this <span class="hljs-built_in">number</span>.
       &lt;/Text&gt;
     &lt;/Text&gt;
   &lt;/View&gt;
@@ -436,37 +436,37 @@
 <p><img src="http://gtms04.alicdn.com/tps/i4/TB1.BoRHpXXXXbdXpXXGJknQVXX-375-220.png" alt=""><br>所以实际上， 那段空间是文本撑开的， 但是文本被<code>numberOfLines={5}</code> 截取了，但是剩余的空间还在。 我猜这应该是个bug。   </p>
 <p>其实官方文档里边把<code>numberOfLines={5}</code>这句放到的是长文本的Text元素上的，也就是子Text上的。 实际结果是不生效。  这应该又是一个bug。 </p>
 <p>Text元素的子Text元素的具体实现是怎样的， 感觉这货会有很多bug， 看官文 </p>
-<pre><code class="lang-html"><span class="xml"> <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">fontWeight</span>: '<span class="hljs-variable">bold</span>'}}</span><span class="xml"><span class="hljs-tag">&gt;</span>
+<pre><code class="lang-html"> &lt;Text style=<span class="hljs-template-variable">{{<span class="hljs-symbol">fontWeight:</span> <span class="hljs-string">'bold'</span>}}</span>&gt;
   I am bold
-  <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">color</span>: '<span class="hljs-variable">red</span>'}}</span><span class="xml"><span class="hljs-tag">&gt;</span>
+  &lt;Text style=<span class="hljs-template-variable">{{<span class="hljs-symbol">color:</span> <span class="hljs-string">'red'</span>}}</span>&gt;
     and red
-  <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
- <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span></span>
+  &lt;<span class="hljs-regexp">/Text&gt;
+ &lt;/</span>Text&gt;
 </code></pre>
 <blockquote>
 <p>Behind the scenes, this is going to be converted to a flat<br>NSAttributedString that contains the following information </p>
 </blockquote>
 <pre><code class="lang-javascript"> <span class="hljs-string">"I am bold and red"</span>
-  <span class="hljs-number">0</span>-<span class="hljs-number">9</span>: bold
-  <span class="hljs-number">9</span>-<span class="hljs-number">17</span>: bold, <span class="hljs-built_in">red</span>
+  <span class="hljs-number">0</span>-<span class="hljs-number">9</span>: <span class="hljs-keyword">bold
+</span>  <span class="hljs-number">9</span>-<span class="hljs-number">17</span>: <span class="hljs-keyword">bold, </span>red
 </code></pre>
 <p>好吧， 那对于<code>numberOfLines={5}</code>  放在子Text元素上的那种bug倒是可以解释了。 </p>
 <h3 id="text-">Text的样式继承</h3>
 <p>实际上React-native里边是没有样式继承这种说法的， 但是对于Text元素里边的Text元素，上面的例子可以看出存在继承。 那既然有继承，问题就来了！</p>
 <p>到底是继承的最外层的Text的值呢，还是继承父亲Text的值呢？</p>
-<pre><code class="lang-html"><span class="xml"> <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">{[styles.text,</span> <span class="hljs-attribute">styles.header</span>]}&gt;</span>
+<pre><code class="lang-html"><span class="xml"> <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=</span></span><span class="hljs-template-variable">{[styles.text, styles.header]}</span><span class="xml"><span class="hljs-tag">&gt;</span>
       文本样式继承
-  <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
 
-  <span class="hljs-tag">&lt;<span class="hljs-title">View</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">backgroundColor</span>: '#333333', <span class="hljs-variable">padding</span>: 10}}</span><span class="xml"><span class="hljs-tag">&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">color</span>: '<span class="hljs-variable">white</span>'}}</span><span class="xml"><span class="hljs-tag">&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-title">Text</span> <span class="hljs-attribute">style</span>=</span></span><span class="hljs-expression">{{<span class="hljs-variable">color</span>: '<span class="hljs-variable">red</span>'}}</span><span class="xml"><span class="hljs-tag"> <span class="hljs-attribute">onPress</span>=<span class="hljs-value">{this.onPressTitle}</span>&gt;</span>
-         文本元素{'\n'}
-        <span class="hljs-tag">&lt;<span class="hljs-title">Text</span>&gt;</span>我是white还是red呢？{'\n'} <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-title">Text</span>&gt;</span>我应该是white的<span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-title">Text</span>&gt;</span>
-  <span class="hljs-tag">&lt;/<span class="hljs-title">View</span>&gt;</span></span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=</span></span><span class="hljs-template-variable">{{backgroundColor: '#333333', padding: 10}</span><span class="xml"><span class="hljs-tag">}&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=</span></span><span class="hljs-template-variable">{{color: 'white'}</span><span class="xml"><span class="hljs-tag">}&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=</span></span><span class="hljs-template-variable">{{color: 'red'}</span><span class="xml"><span class="hljs-tag">} <span class="hljs-attr">onPress</span>=</span></span><span class="hljs-template-variable">{this.onPressTitle}</span><span class="xml"><span class="hljs-tag">&gt;</span>
+         文本元素</span><span class="hljs-template-variable">{'\n'}</span><span class="xml">
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>我是white还是red呢？</span><span class="hljs-template-variable">{'\n'}</span><span class="xml"> <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>我应该是white的<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
 </code></pre>
 <p><img src="http://gtms04.alicdn.com/tps/i4/TB1z2ERHpXXXXcrXpXXXsoYPFXX-373-120.png" alt=""></p>
 <p>结果可见是直接继承父亲Text的。  </p>

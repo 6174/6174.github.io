@@ -20,6 +20,8 @@
   "homepage": "https://github.com/6174/blog",
   "dependencies": {
     "ejs": "^2.3.1",
+    "fs-extra": "^0.26.4",
+    "highlight.js": "^9.1.0",
     "marked": "^0.3.3"
   }
 }
