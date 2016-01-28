@@ -52,7 +52,7 @@ import co from 'your-addon/components/your-component'
 
 app 目录合并，addon 目录引用这两个点应该是 addon 机制的核心， 理解了就知道怎么去创建一个组件了 
 
-对于 vendor 目录里边的文件，可以直接通过  'your-addon/vendor/file' 的路径引用, 所以如果想在 addon 中使用 less, 可以如下方式 
+对于 vendor 目录里边的文件，可以直接通过  'vendor/file' 的路径引用, 所以如果想在 addon 中使用 less, 可以如下方式 
 
 ```less
 // file your-addon/vendor/styles/style.less

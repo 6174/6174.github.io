@@ -62,7 +62,7 @@
 <span class="hljs-keyword">import</span> co <span class="hljs-keyword">from</span> <span class="hljs-string">'your-addon/components/your-component'</span>
 </code></pre>
 <p>app 目录合并，addon 目录引用这两个点应该是 addon 机制的核心， 理解了就知道怎么去创建一个组件了 </p>
-<p>对于 vendor 目录里边的文件，可以直接通过  &#39;your-addon/vendor/file&#39; 的路径引用, 所以如果想在 addon 中使用 less, 可以如下方式 </p>
+<p>对于 vendor 目录里边的文件，可以直接通过  &#39;vendor/file&#39; 的路径引用, 所以如果想在 addon 中使用 less, 可以如下方式 </p>
 <pre><code class="lang-less"><span class="hljs-comment">// file your-addon/vendor/styles/style.less</span>
 <span class="hljs-comment">// project/app/style/app.less</span>
 <span class="hljs-meta"><span class="hljs-meta-keyword">import</span> 'your-addon/vendor/styles/style.less';</span>
