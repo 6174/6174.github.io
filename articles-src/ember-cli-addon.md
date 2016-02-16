@@ -40,7 +40,7 @@ ember addon 是通过 npm 模块管理的，可以将 addon 发布到 npm 仓库
 
 对于 app 目录，ember-cli 会将这个目录合并到 项目的 app 目录中，合并并不是意味着写法能完全和项目 app 目录一致，有两个需要注意的点：
 
-1. app 不支持 pod 方式，具体参考这个 issue [Templates in pods from addons ](https://github.com/ember-cli/ember-cli/issues/1634) 
+1. app 不支持 pod 方式，具体参考这个 issue [Templates in pods from addons ](https://github.com/ember-cli/ember-cli/issues/1634) , 
 2. style 不支持 less、sass 
 
 对于 addon 目录里边的文件，可以在项目代码里边当模块 import 进去，比如

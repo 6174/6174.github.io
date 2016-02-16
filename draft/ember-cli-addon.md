@@ -5,7 +5,7 @@
 
 最近公司主项目用到了 ember + ember-cli，虽然当前前端业内推崇 react , 但是接触到 ember-cli 过后，被 ember-cli 的工程化震撼到了，相比于 react， 前者算是一个 lib , 而后者更应该算是一个框架，这篇文章的主题不打算完整的介绍一下 ember，出于公司需要建一个公共组件库的目的， 这里介绍一下 ember-addon 相关的技术细节 
 
-## 为什么需要 addon
+## 为什么需要 addon 
 
 addon 也就是插件模式，对于有多个 ember-cli 项目的情况，需要将公共的部分以组件的方式剥离出来，addon 就是 ember-cli 提供的剥离方式
 
