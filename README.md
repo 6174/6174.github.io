@@ -1,7 +1,2 @@
 # 6174.github.io
-
-`前端求职`、 `前端学习咨询`、 `前端架构探讨`、 `前端难题` 等
-总之和前端相关的都可以在这个仓库下面给我提 issue 哈， 一定尽力回答
-
-> HAPPY FE ：- ）
-
+![学家的博客](https://gai1ek6506.feishu.cn/wiki/wikcnXNSbF2Nuqcbi8UpwPm5SAe)
